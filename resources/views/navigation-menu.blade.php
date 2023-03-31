@@ -18,7 +18,7 @@
 
                     @can('manager-higher')
                     <x-nav-link href="{{ route('events.index') }}" :active="request()->routeIs('events.index')">
-                        イベント管理
+                        レッスン管理
                     </x-nav-link>
                     @endcan
                 </div>
@@ -147,7 +147,7 @@
             </x-responsive-nav-link>
             @can('manager-higher')
             <x-responsive-nav-link href="{{ route('events.index') }}" :active="request()->routeIs('events.index')">
-                イベント管理
+                レッスン管理
             </x-responsive-nav-link>
             @endcan
         </div>
