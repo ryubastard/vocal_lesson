@@ -27,8 +27,13 @@
                         </div>
 
                         <div class="mt-4">
-                            <x-label for="information" value="レッスン料金" />
-                            {!! nl2br(e($event->information)) !!}
+                            <x-label for="price" value="レッスン料金" />
+                            {{ number_format($event->price) }}円
+                        </div>
+
+                        <div class="mt-4">
+                            <x-label for="price" value="レッスン場所" />
+                            {{ $event->location }}
                         </div>
 
                         <div class="md:flex justify-between">

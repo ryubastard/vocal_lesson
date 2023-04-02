@@ -29,10 +29,15 @@
                         </div>
 
                         <div class="mt-4">
-                            <x-label for="information" value="レッスン料金" />
-                            <x-textarea row="3" id="information" class="block mt-1 w-full" name="information">
-                                {{ $event->information }}
-                            </x-textarea>
+                            <x-label for="price" value="レッスン料金" />
+                            <x-price id="price" class="block mt-1 w-full" name="price">
+                                {{ $event->price }}
+                            </x-price>
+                        </div>
+
+                        <div class="mt-4">
+                            <x-label for="location" value="レッスン場所" />
+                            <x-input id="location" class="block mt-1 w-full" type="text" name="location" value="{{ $event->location }}" required autofocus />
                         </div>
 
                         <div class="md:flex justify-between">

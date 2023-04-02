@@ -25,7 +25,7 @@ class UpdateEventRequest extends FormRequest
     {
         return [
             'event_name' => ['required', 'max:50'],
-            'information' => ['required', 'max:200'],
+            'price' => ['required', 'numeric', 'min:0'],
             'event_date' => ['required', 'date'],
             'start_time' => ['required'],
             'end_time' => ['required', 'after:start_time'],

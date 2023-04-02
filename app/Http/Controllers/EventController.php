@@ -25,6 +25,7 @@ class EventController extends Controller
             ->groupBy('event_id');
 
         $today = Carbon::today();
+
         $events = DB::table('events')
             ->leftJoinSub( // 外部結合
                 $reservedPeople,
@@ -33,7 +34,7 @@ class EventController extends Controller
                     $join->on('events.id', '=', 'reservedPeople.event_id');
                 }
             )
-            ->whereDate('events.start_date', '<', $today) // 最新の情報のみ取得
+            ->whereDate('events.start_date', '>=', $today) // 最新の情報のみ取得
             ->orderBy('events.start_date', 'asc')
             ->paginate(10);
 
@@ -74,7 +75,8 @@ class EventController extends Controller
 
         Event::create([
             'name' => $request['event_name'],
-            'information' => $request['information'],
+            'location' => $request['location'],
+            'price' => $request['price'],
             'start_date' => $startDate,
             'end_date' => $endDate,
             'max_people' => $request['max_people'],
@@ -183,7 +185,8 @@ class EventController extends Controller
         // 保存処理
         $event = Event::findOrFail($event->id);
         $event->name = $request['event_name'];
-        $event->information = $request['information'];
+        $event->location = $request['location'];
+        $event->price = $request['price'];
         $event->start_date = $startDate;
         $event->end_date = $endDate;
         $event->max_people = $request['max_people'];
