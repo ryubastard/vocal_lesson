@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Carbon\Carbon;
+use App\Models\User;
 
 class Event extends Model
 {
@@ -50,4 +51,9 @@ class Event extends Model
         );
     }
 
+    public function users() // リレーションの設定
+    {
+        return $this->belongsToMany(User::class, 'reservations')
+            ->withPivot('id', 'number_of_people', 'canceled_date');
+    }
 }
