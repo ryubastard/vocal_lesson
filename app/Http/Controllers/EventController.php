@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Reservation;
 use Carbon\Carbon;
 use App\Services\EventService;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,37 @@ class EventController extends Controller
         $today = Carbon::today();
 
         $events = DB::table('events')
+            ->select(DB::raw('DATE(start_date) AS date'), 'name', 'location', DB::raw('SUM(max_people) AS max_people_sum'), DB::raw('SUM(IFNULL(number_of_people, 0)) AS reserved_people_sum'))
+            ->leftJoinSub($reservedPeople, 'rp', function ($join) {
+                $join->on('events.id', '=', 'rp.event_id');
+            })
+            ->whereDate('events.start_date', '>=', $today) // 最新の情報のみ取得
+            ->groupBy('date', 'name', 'location')
+            ->orderBy('start_date', 'desc')
+            ->paginate(10);
+
+        return view(
+            'manager.events.index',
+            compact('events')
+        );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Event  $event
+     * @return \Illuminate\Http\Response
+     */
+    public function detail($event, $date)
+    {
+        // 予約人数
+        $reservedPeople = DB::table('reservations')
+            ->select('event_id', DB::raw('sum(number_of_people) as number_of_people'))
+            ->whereNull('canceled_date') // キャンセル分は含まない 
+            ->groupBy('event_id');
+
+        $events = Event::where('location', $event)
+            ->whereRaw("DATE(start_date) = '{$date}'") // 日付部分が一致するレコードを検索
             ->leftJoinSub( // 外部結合
                 $reservedPeople,
                 'reservedPeople',
@@ -34,13 +66,26 @@ class EventController extends Controller
                     $join->on('events.id', '=', 'reservedPeople.event_id');
                 }
             )
-            ->whereDate('events.start_date', '>=', $today) // 最新の情報のみ取得
-            ->orderBy('events.start_date', 'asc')
-            ->paginate(10);
+            ->orderBy('start_date', 'asc')
+            ->get();
+
+        foreach ($events as $event) {
+            $event->startDate = $event->startTime;
+            $event->endDate = $event->endTime;
+        }
+
+        $users = collect();
+        $events->each(function ($event) use ($users) {
+            $users->push($event->users);
+        });
+        $users = $users->flatten();
 
         return view(
-            'manager.events.index',
-            compact('events')
+            'manager.events.detail',
+            compact(
+                'events',
+                'users',
+            )
         );
     }
 
@@ -84,6 +129,10 @@ class EventController extends Controller
         ]);
 
         session()->flash('status', '登録完了');
+
+        if ($request['registration'] === "1") {
+            return back()->withInput();
+        }
         return to_route('events.index'); //名前付きルート
     }
 
@@ -101,8 +150,10 @@ class EventController extends Controller
         $reservations = []; // 連想配列を作成 
         foreach ($users as $user) {
             $reservedInfo = [
+                'id' => $user->id,
                 'name' => $user->name,
                 'number_of_people' => $user->pivot->number_of_people,
+                'email' => $user->pivot->email,
                 'canceled_date' => $user->pivot->canceled_date
             ];
             array_push($reservations, $reservedInfo); // 連想配列に追加
@@ -212,15 +263,14 @@ class EventController extends Controller
             ->groupBy('event_id');
 
         $today = Carbon::today();
+
         $events = DB::table('events')
-            ->leftJoinSub( // 外部結合
-                $reservedPeople,
-                'reservedPeople',
-                function ($join) {
-                    $join->on('events.id', '=', 'reservedPeople.event_id');
-                }
-            )
-            ->whereDate('start_date', '<', $today)
+            ->select(DB::raw('DATE(start_date) AS date'), 'name', 'location', DB::raw('SUM(max_people) AS max_people_sum'), DB::raw('SUM(IFNULL(number_of_people, 0)) AS reserved_people_sum'))
+            ->leftJoinSub($reservedPeople, 'rp', function ($join) {
+                $join->on('events.id', '=', 'rp.event_id');
+            })
+            ->whereDate('events.start_date', '<', $today)
+            ->groupBy('date', 'name', 'location')
             ->orderBy('start_date', 'desc')
             ->paginate(10);
 
@@ -236,5 +286,25 @@ class EventController extends Controller
     public function destroy(Event $event)
     {
         //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Event  $event
+     * @return \Illuminate\Http\Response
+     */
+    public function cancel($event, $id)
+    {
+        $reservation = Reservation::where('id', '=', $id)
+            ->where('event_id', '=', $event)
+            ->latest()
+            ->first();
+
+        $reservation->canceled_date = Carbon::now()->format('Y-m-d H:i:s');
+        $reservation->save();
+
+        session()->flash('status', 'キャンセルしました。');
+        return back();
     }
 }

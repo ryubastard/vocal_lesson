@@ -41,30 +41,30 @@
                         <div class="md:flex justify-between">
                             <div class="mt-4">
                                 <x-label for="event_date" value="レッスン日付" />
-                                <x-input id="event_date" class="block mt-1 w-full" type="text" name="event_date" required />
+                                <x-input id="event_date" class="block mt-1 w-full" type="text" name="event_date" :value="old('event_date')" required />
                             </div>
 
                             <div class="mt-4">
                                 <x-label for="start_time" value="開始時間" />
-                                <x-input id="start_time" class="block mt-1 w-full" type="text" name="start_time" required />
+                                <x-input id="start_time" class="block mt-1 w-full" type="text" name="start_time" :value="old('start_time')" required />
                             </div>
 
                             <div class="mt-4">
                                 <x-label for="end_time" value="終了時間" />
-                                <x-input id="end_time" class="block mt-1 w-full" type="text" name="end_time" required />
+                                <x-input id="end_time" class="block mt-1 w-full" type="text" name="end_time" :value="old('end_time')" required />
                             </div>
                         </div>
 
                         <div class="md:flex justify-between items-end">
                             <div class="mt-4">
                                 <x-label for="max_people" value="定員数" />
-                                <x-input id="max_people" class="block mt-1 w-full" type="text" name="max_people" required />
+                                <x-input id="max_people" class="block mt-1 w-full" type="text" name="max_people" :value="old('max_people')"  required />
                             </div>
                             <div class="mt-4">
 
                             </div>
                             <div class="flex space-x-4 justify-around">
-                                <input type="checkbox" id="is_continued_registration" name="is_continued_registration" class="block mt-1" value="1" />
+                                <input type="checkbox" id="registration" name="registration" class="block mt-1" value="1" />
                                 続けて登録する
                                 <input type="radio" name="is_visible" value="0" checked />表示
                                 <input type="radio" name="is_visible" value="1" />非表示

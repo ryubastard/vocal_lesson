@@ -24,32 +24,29 @@
                                         <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
                                             レッスン名</th>
                                         <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                                            開始日時</th>
+                                            場所</th>
                                         <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                                            終了日時</th>
+                                            日付</th>
                                         <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
                                             予約人数</th>
                                         <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
                                             定員数</th>
-                                        <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                                            表示・非表示</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($events as $event)
                                     <tr>
-                                        <td class="text-blue-500 px-4 py-3"><a href="{{ route('events.show',['event' => $event->id ]) }}">{{ $event->name }}</td>
-                                        <td class="px-4 py-3">{{ $event->start_date }}</td>
-                                        <td class="px-4 py-3">{{ $event->end_date }}</td>
+                                        <td class="text-blue-500 px-4 py-3"><a href="{{ route('events.detail', ['event' => $event->location, 'date' => $event->date]) }}">{{ $event->name }}</td>
+                                        <td class="px-4 py-3">{{ $event->location }}</td>
+                                        <td class="px-4 py-3">{{ $event->date }}</td>
                                         <td class="px-4 py-3">
-                                            @if(is_null($event->number_of_people))
+                                            @if(is_null($event->reserved_people_sum))
                                             0
                                             @else
-                                            {{ $event->number_of_people }}
+                                            {{ $event->reserved_people_sum }}
                                             @endif
                                         </td>
-                                        <td class="px-4 py-3">{{ $event->max_people }}</td>
-                                        <td class="px-4 py-3">{{ $event->is_visible }}</td>
+                                        <td class="px-4 py-3">{{ $event->max_people_sum }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
