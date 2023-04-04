@@ -285,7 +285,49 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        //
+        $event = Event::findOrFail($event->id);
+        $location = $event->location;
+        $date = substr($event->start_date, 0, 10);
+
+        $users = $event->users;
+
+        $reservations = []; // 連想配列を作成 
+        foreach ($users as $user) {
+            $reservedInfo = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'number_of_people' => $user->pivot->number_of_people,
+                'email' => $user->pivot->email,
+                'canceled_date' => $user->pivot->canceled_date
+            ];
+            array_push($reservations, $reservedInfo); // 連想配列に追加
+        }
+
+        if ($reservations) { // 予約者の有無確認
+            session()->flash('status', '予約している人が存在するため、キャンセルできません。');
+
+            $eventDate = $event->eventDate;
+            $startTime = $event->startTime;
+            $endTime = $event->endTime;
+
+            return view(
+                'manager.events.show',
+                compact(
+                    'event',
+                    'users',
+                    'reservations',
+                    'eventDate',
+                    'startTime',
+                    'endTime'
+                )
+            );
+        }
+
+        $event->delete();
+
+        session()->flash('status', 'キャンセルしました。');
+
+        return to_route('events.index'); //名前付きルート
     }
 
     /**
