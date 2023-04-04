@@ -22,7 +22,6 @@ class EventController extends Controller
         // 予約人数
         $reservedPeople = DB::table('reservations')
             ->select('event_id', DB::raw('sum(number_of_people) as number_of_people'))
-            ->whereNull('canceled_date') // キャンセル分は含まない 
             ->groupBy('event_id');
 
         $today = Carbon::today();
@@ -54,7 +53,6 @@ class EventController extends Controller
         // 予約人数
         $reservedPeople = DB::table('reservations')
             ->select('event_id', DB::raw('sum(number_of_people) as number_of_people'))
-            ->whereNull('canceled_date') // キャンセル分は含まない 
             ->groupBy('event_id');
 
         $events = Event::where('location', $event)
@@ -133,7 +131,7 @@ class EventController extends Controller
         if ($request['registration'] === "1") {
             return back()->withInput();
         }
-        return to_route('events.index'); //名前付きルート
+        return to_route('events.index'); 
     }
 
     /**
@@ -154,7 +152,6 @@ class EventController extends Controller
                 'name' => $user->name,
                 'number_of_people' => $user->pivot->number_of_people,
                 'email' => $user->pivot->email,
-                'canceled_date' => $user->pivot->canceled_date
             ];
             array_push($reservations, $reservedInfo); // 連想配列に追加
         }
@@ -259,7 +256,6 @@ class EventController extends Controller
         // 予約人数
         $reservedPeople = DB::table('reservations')
             ->select('event_id', DB::raw('sum(number_of_people) as number_of_people'))
-            ->whereNull('canceled_date') // キャンセル分は含まない 
             ->groupBy('event_id');
 
         $today = Carbon::today();
@@ -298,7 +294,6 @@ class EventController extends Controller
                 'name' => $user->name,
                 'number_of_people' => $user->pivot->number_of_people,
                 'email' => $user->pivot->email,
-                'canceled_date' => $user->pivot->canceled_date
             ];
             array_push($reservations, $reservedInfo); // 連想配列に追加
         }
@@ -338,13 +333,12 @@ class EventController extends Controller
      */
     public function cancel($event, $id)
     {
-        $reservation = Reservation::where('id', '=', $id)
+        $reservation = Reservation::where('user_id', '=', $id)
             ->where('event_id', '=', $event)
             ->latest()
             ->first();
 
-        $reservation->canceled_date = Carbon::now()->format('Y-m-d H:i:s');
-        $reservation->save();
+        $reservation->delete();
 
         session()->flash('status', 'キャンセルしました。');
         return back();

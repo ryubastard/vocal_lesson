@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignId('event_id')->constrained()->onUpdate('cascade'); //外部キー制約
             $table->string('email');
             $table->integer('number_of_people');
-            $table->datetime('canceled_date')->nullable();
             $table->timestamps();
         });
     }
