@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\LessonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +21,10 @@ Route::get('/', function () {
 
 Route::prefix('manager')
     ->middleware('can:manager-higher')->group(function () {
-        Route::get('events/past', [EventController::class, 'past'])->name('events.past');
-        Route::post('events/{event}/{id}/', [EventController::class, 'cancel'])->name('events.cancel');
-        Route::resource('events', EventController::class);
-        Route::get('events/{event}/{date}', [EventController::class, 'detail'])->name('events.detail');
+        Route::get('lessons/past', [lessonController::class, 'past'])->name('lessons.past');
+        Route::post('lessons/{lesson}/{id}/', [lessonController::class, 'cancel'])->name('lessons.cancel');
+        Route::resource('lessons', lessonController::class);
+        Route::get('lessons/{lesson}/{date}', [lessonController::class, 'detail'])->name('lessons.detail');
     });
 
 Route::middleware('can:user-higher')->group(function () {

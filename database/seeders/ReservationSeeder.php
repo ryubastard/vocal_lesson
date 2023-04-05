@@ -18,22 +18,22 @@ class ReservationSeeder extends Seeder
         DB::table('reservations')->insert([
             [
                 'user_id' => 1,
-                'event_id' => 1,
+                'lesson_id' => 1,
                 'email' => 'admin@admin.com',
                 'number_of_people' => 5,
             ], [
                 'user_id' => 2,
-                'event_id' => 1,
+                'lesson_id' => 1,
                 'email' => 'manager@manager.com',
                 'number_of_people' => 3,
             ], [
                 'user_id' => 1,
-                'event_id' => 2,
+                'lesson_id' => 2,
                 'email' => 'admin@admin.com',
                 'number_of_people' => 2,
             ], [
                 'user_id' => 2,
-                'event_id' => 2,
+                'lesson_id' => 2,
                 'email' => 'manager@manager.com',
                 'number_of_people' => 2,
             ]

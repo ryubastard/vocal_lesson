@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onUpdate('cascade'); //外部キー制約
-            $table->foreignId('event_id')->constrained()->onUpdate('cascade'); //外部キー制約
+            $table->foreignId('lesson_id')->constrained()->onUpdate('cascade'); //外部キー制約
             $table->string('email');
             $table->integer('number_of_people');
             $table->timestamps();

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Carbon\Carbon;
 use App\Models\User;
 
-class Event extends Model
+class Lesson extends Model
 {
     use HasFactory;
 
@@ -27,7 +27,7 @@ class Event extends Model
         'is_visible',
     ];
 
-    protected function eventDate(): Attribute //データを加工して取得する（アクセサ）
+    protected function lessonDate(): Attribute //データを加工して取得する（アクセサ）
     {
         return new Attribute(
             get: fn () => Carbon::parse($this->start_date)->format('Y年m月d日'),
@@ -45,7 +45,7 @@ class Event extends Model
             get: fn () => Carbon::parse($this->end_date)->format('H時i分'),
         );
     }
-    protected function editEventDate(): Attribute //日付の重複チェック
+    protected function editLessonDate(): Attribute //日付の重複チェック
     {
         return new Attribute(
             get: fn () => Carbon::parse($this->start_date)->format('Y-m-d'),
