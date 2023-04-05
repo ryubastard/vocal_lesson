@@ -49,7 +49,7 @@ class LessonController extends Controller
      * @param  \App\Models\Lesson $lesson
      * @return \Illuminate\Http\Response
      */
-    public function detail($lesson, $date)
+    public function overview($lesson, $date)
     {
         // 予約人数
         $reservedPeople = DB::table('reservations')
@@ -80,7 +80,7 @@ class LessonController extends Controller
         $users = $users->flatten();
 
         return view(
-            'manager.lessons.detail',
+            'manager.lessons.overview',
             compact(
                 'lessons',
                 'users',

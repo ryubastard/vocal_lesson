@@ -41,7 +41,7 @@
                                         @foreach ($lessons as $lesson)
                                             <tr>
                                                 <td class="text-blue-500 px-4 py-3"><a
-                                                        href="{{ route('lessons.detail', ['lesson' => $lesson->location, 'date' => $lesson->date]) }}">{{ $lesson->location }}
+                                                        href="{{ route('lessons.overview', ['lesson' => $lesson->location, 'date' => $lesson->date]) }}">{{ $lesson->location }}
                                                 </td>
                                                 <td class="px-4 py-3">{{ $lesson->date }}</td>
                                                 <td class="px-4 py-3">

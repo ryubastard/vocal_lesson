@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EventController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\MyPageController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -21,16 +23,18 @@ Route::get('/', function () {
 
 Route::prefix('manager')
     ->middleware('can:manager-higher')->group(function () {
-        Route::get('lessons/past', [lessonController::class, 'past'])->name('lessons.past');
-        Route::post('lessons/{lesson}/{id}/', [lessonController::class, 'cancel'])->name('lessons.cancel');
-        Route::resource('lessons', lessonController::class);
-        Route::get('lessons/{lesson}/{date}', [lessonController::class, 'detail'])->name('lessons.detail');
+        Route::get('lessons/past', [LessonController::class, 'past'])->name('lessons.past');
+        Route::post('lessons/{lesson}/{id}/', [LessonController::class, 'cancel'])->name('lessons.cancel');
+        Route::resource('lessons', LessonController::class);
+        Route::get('lessons/{lesson}/{date}', [LessonController::class, 'overview'])->name('lessons.overview');
     });
 
 Route::middleware('can:user-higher')->group(function () {
-    Route::get('index', function () {
-        dd('user');
-    });
+    Route::get('/dashboard',  [ReservationController::class, 'dashboard'])->name('dashboard');
+    Route::get('/mypage',  [MyPageController::class, 'index'])->name('mypage.index');
+    Route::get('/mypage/{id}',  [MyPageController::class, 'show'])->name('mypage.show');
+    Route::get('/{id}',  [ReservationController::class, 'detail'])->name('lessons.detail');
+    Route::post('/{id}',  [ReservationController::class, 'reserve'])->name('lessons.reserve');
 });
 
 Route::middleware([
