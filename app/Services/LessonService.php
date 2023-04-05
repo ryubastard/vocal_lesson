@@ -42,4 +42,20 @@ class LessonService
 
         return $dateTime;
     }
+
+    // 一週間分の情報を取得するメソッド
+    public static function getWeekLessons($startDate, $endDate)
+    {
+        $reservedPeople = DB::table('reservations')
+            ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
+            ->groupBy('lesson_id');
+
+        return DB::table('lessons')
+            ->leftJoinSub($reservedPeople, 'reservedPeople', function ($join) {
+                $join->on('lessons.id', '=', 'reservedPeople.lesson_id');
+            })
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->orderBy('start_date', 'asc')
+            ->get();
+    }
 }

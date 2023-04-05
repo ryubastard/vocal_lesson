@@ -16,7 +16,7 @@ use App\Http\Controllers\LessonController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('calendar');
 });
 
 Route::prefix('manager')
