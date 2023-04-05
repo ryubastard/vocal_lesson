@@ -24,7 +24,7 @@
 
                         <div>
                             <x-label for="event_name" value="レッスン名" />
-                            <x-input id="event_name" class="block mt-1 w-full" type="text" name="event_name" :value="old('event_name')" required autofocus />
+                            <x-input id="event_name" class="block mt-1 w-full" type="text" name="event_name" :value="old('event_name')" required />
                         </div>
 
                         <div class="mt-4">
@@ -35,7 +35,7 @@
 
                         <div class="mt-4">
                             <x-label for="location" value="レッスン場所" />
-                            <x-input id="location" class="block mt-1 w-full" type="text" name="location" :value="old('location')" required autofocus />
+                            <x-input id="location" class="block mt-1 w-full" type="text" name="location" :value="old('location')" required />
                         </div>
 
                         <div class="md:flex justify-between">
