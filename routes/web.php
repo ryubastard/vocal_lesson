@@ -33,9 +33,13 @@ Route::middleware('can:user-higher')->group(function () {
     Route::get('/dashboard',  [ReservationController::class, 'dashboard'])->name('dashboard');
     Route::get('/mypage',  [MyPageController::class, 'index'])->name('mypage.index');
     Route::get('/mypage/{id}',  [MyPageController::class, 'show'])->name('mypage.show');
-    Route::get('/{id}',  [ReservationController::class, 'detail'])->name('lessons.detail');
+    Route::post('/mypage/{id}', [MyPageController::class, 'cancel'])->name('mypage.cancel');
+    // Route::get('/{id}',  [ReservationController::class, 'detail'])->name('lessons.detail');
     Route::post('/{id}',  [ReservationController::class, 'reserve'])->name('lessons.reserve');
 });
+
+Route::get('/{id}',  [ReservationController::class, 'detail'])->name('lessons.detail');
+
 
 Route::middleware([
     'auth:sanctum',

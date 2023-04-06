@@ -41,9 +41,16 @@ class ReservationController extends Controller
         } else {
             $resevablePeople = $lesson->max_people;
         }
+
+        // 予約済みイベントは再度予約できないようにする
+        $isReserved = Reservation::where('user_id', '=', Auth::id())
+            ->where('lesson_id', '=', $id)
+            ->latest()
+            ->first();
+
         return view(
             'lesson-detail',
-            compact('lesson', 'resevablePeople')
+            compact('lesson', 'resevablePeople', 'isReserved')
         );
     }
 
@@ -72,7 +79,7 @@ class ReservationController extends Controller
                 'number_of_people' => $request->reserved_people,
             ]);
 
-            session()->flash('status', '登録完了です');
+            session()->flash('status', '予約しました。');
             return to_route('dashboard');
         } else {
             session()->flash('status', 'この人数は予約できません。');

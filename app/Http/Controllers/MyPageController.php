@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Lesson;
+use App\Models\Reservation;
 use Illuminate\Support\Facades\Auth;
 use App\Services\MyPageService;
 use Illuminate\Http\Request;
@@ -25,27 +27,6 @@ class MyPageController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -53,40 +34,31 @@ class MyPageController extends Controller
      */
     public function show($id)
     {
-        //
-    }
+        $lesson = Lesson::findOrFail($id);
+        $reservation = Reservation::where('user_id', '=', Auth::id())
+            ->where('lesson_id', '=', $id)
+            ->latest() // 最新の情報
+            ->first();
 
+        // dd($reservation);
+        return view('mypage/show', compact('lesson', 'reservation'));
+    }
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function cancel($id)
     {
-        //
-    }
+        $reservation = Reservation::where('user_id', '=', Auth::id())
+            ->where('lesson_id', '=', $id)
+            ->latest()
+            ->first();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        $reservation->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        session()->flash('status', 'キャンセルしました。');
+        return to_route('dashboard');
     }
 }
