@@ -59,18 +59,19 @@
                                 {{ $lesson->max_people }}
                             </div>
                             <div class="mt-4">
-                                @if ($resevablePeople <= 0) <span
-                                        class="text-red-500 text-xs">
-                                        このレッスンは満員です。
-                                    </span>
-                                @else
-                                    <x-label for="reserved_people" value="予約人数" />
-                                    <select name="reserved_people">
-                                        @for ($i = 1; $i <= $resevablePeople; $i++)
-                                            <option value="{{ $i }}">{{ $i }}</option>
-                                        @endfor
-                                    </select>
-                                @endif
+                                @if ($lesson->lessonDate >= \Carbon\Carbon::today()->format('Y年m月d日'))
+                                    @if ($resevablePeople <= 0) <span
+                                            class="text-red-500 text-xs">
+                                            このレッスンは満員です。
+                                        </span>
+                                    @else
+                                        <x-label for="reserved_people" value="予約人数" />
+                                        <select name="reserved_people">
+                                            @for ($i = 1; $i <= $resevablePeople; $i++)
+                                                <option value="{{ $i }}">{{ $i }}</option>
+                                            @endfor
+                                        </select>
+                                    @endif
                             </div>
                             <input type="hidden" name="id" value="{{ $lesson->id }}">
                             @if ($resevablePeople > 0)
@@ -85,10 +86,14 @@
                                     <span class="text-red-500 text-xs">このレッスンは既に予約済みです。</span>
                                 @endif
                             @endif
+                        @else
+                            <span class="text-red-500 text-xs">このレッスンは終了しました。</span>
+                            @endif
+
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</x--layout>
+    </x--layout>
