@@ -14,12 +14,16 @@
                     <x-validation-errors class="mb-4" />
 
                     @if (session('status'))
-                        <div class="mb-4 font-medium text-sm text-green-600">
-                            {{ session('status') }}
-                        </div>
+                    <div class="mb-4 font-medium text-sm text-green-600">
+                        {{ session('status') }}
+                    </div>
                     @endif
 
-                    <form method="GET" action="{{ route('login') }}">
+                    <form method="GET" action="{{ route('lessons.confirmation', ['id' => $lesson->id]) }}">
+
+                        <div style="text-align: center;" class="text-red-500 text-xs">
+                            <p class="my-4">予約にはログインが必要です</p>
+                        </div>
 
                         <div>
                             <x-label for="lesson_name" value="レッスン名" />
@@ -60,33 +64,30 @@
                             </div>
                             <div class="mt-4">
                                 @if ($lesson->lessonDate >= \Carbon\Carbon::today()->format('Y年m月d日'))
-                                    @if ($resevablePeople <= 0) <span
-                                            class="text-red-500 text-xs">
-                                            このレッスンは満員です。
-                                        </span>
+                                @if ($resevablePeople <= 0) <span class="text-red-500 text-xs">
+                                    このレッスンは満員です。
+                                    </span>
                                     @else
-                                        <x-label for="reserved_people" value="予約人数" />
-                                        <select name="reserved_people">
-                                            @for ($i = 1; $i <= $resevablePeople; $i++)
-                                                <option value="{{ $i }}">{{ $i }}</option>
+                                    <x-label for="reserved_people" value="予約人数" />
+                                    <select name="reserved_people">
+                                        @for ($i = 1; $i <= $resevablePeople; $i++) <option value="{{ $i }}">{{ $i }}</option>
                                             @endfor
-                                        </select>
+                                    </select>
                                     @endif
                             </div>
                             <input type="hidden" name="id" value="{{ $lesson->id }}">
                             @if ($resevablePeople > 0)
-                                @if ($isReserved === null)
-                                    <input type="hidden" name="id" value="{{ $lesson->id }}">
-                                    <div class="flex items-center justify-center mt-4">
-                                        <x-button class="ml-4">
-                                            予約する
-                                        </x-button>
-                                    </div>
-                                @else
-                                    <span class="text-red-500 text-xs">このレッスンは既に予約済みです。</span>
-                                @endif
+                            @if ($isReserved === null)
+                            <div class="flex items-center justify-center mt-4">
+                                <x-button class="ml-4">
+                                    予約する
+                                </x-button>
+                            </div>
+                            @else
+                            <span class="text-red-500 text-xs">このレッスンは既に予約済みです。</span>
                             @endif
-                        @else
+                            @endif
+                            @else
                             <span class="text-red-500 text-xs">このレッスンは終了しました。</span>
                             @endif
 

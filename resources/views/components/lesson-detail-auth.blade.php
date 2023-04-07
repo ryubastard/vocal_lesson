@@ -76,7 +76,6 @@
                             <input type="hidden" name="id" value="{{ $lesson->id }}">
                             @if ($resevablePeople > 0)
                                 @if ($isReserved === null)
-                                    <input type="hidden" name="id" value="{{ $lesson->id }}">
                                     <div class="flex items-center justify-center mt-4">
                                         <x-button class="ml-4">
                                             予約する

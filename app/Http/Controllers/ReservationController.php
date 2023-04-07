@@ -86,4 +86,25 @@ class ReservationController extends Controller
             return view('dashboard');
         }
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function confirmation($id)
+    {
+        return view('dashboard/confirmation', compact('id'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create($id)
+    {
+        return view('dashboard/register');
+    }
 }
