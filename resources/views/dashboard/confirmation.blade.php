@@ -10,18 +10,13 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <div class="max-w-2xl py-4 mx-auto">
                     <div style="text-align: center;">
-                        <p class="my-4">ログインすると簡単に予約ができます</p>
+                        <p class="my-4">予約にはログインが必要です</p>
                         <div class="flex items-center justify-center mt-4">
-                            <x-button class="my-4 bg-blue-300 text-white hover:bg-blue-500" onclick="location.href='{{ route('login') }}'">
-                                ログイン
-                            </x-button>
+                            <button onclick="location.href='{{ route('login') }}'" class="bg-cyan-200 text-white py-2 px-6 rounded-full hover:bg-cyan-300">ログイン</button>
                         </div>
                         <div class="flex items-center justify-center mt-4">
-
                             <input type="hidden" name="id" value="{{ $id }}">
-                            <x-button class="my-4 bg-black-300 border border-black text-black hover:bg-gray-500" onclick="location.href='{{ route('lessons.store', ['id' => $id]) }}'">
-                                初めての方はこちらから
-                            </x-button>
+                            <button onclick="location.href='{{ route('lessons.store', ['id' => $id]) }}'" class="bg-black text-white py-2 px-6 rounded-full">初めての方はこちらから</button>
                         </div>
                     </div>
                 </div>

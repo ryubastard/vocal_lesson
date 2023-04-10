@@ -14,9 +14,9 @@
                     <x-validation-errors class="mb-4" />
 
                     @if (session('status'))
-                        <div class="mb-4 font-medium text-sm text-green-600">
-                            {{ session('status') }}
-                        </div>
+                    <div class="mb-4 font-medium text-sm text-green-600">
+                        {{ session('status') }}
+                    </div>
                     @endif
 
                     <form method="GET" action="{{ route('lessons.edit', ['lesson' => $lesson->id]) }}">
@@ -60,22 +60,20 @@
                             </div>
                             <div class="flex space-x-4 justify-around">
                                 @if ($lesson->is_visible)
-                                    表示中
+                                表示中
                                 @else
-                                    非表示
+                                非表示
                                 @endif
                             </div>
                             @if ($lesson->lessonDate >= \Carbon\Carbon::today()->format('Y年m月d日'))
-                                <x-button class="ml-4">
-                                    編集する
-                                </x-button>
+                            <x-button class="ml-4">
+                                編集する
+                            </x-button>
                     </form>
-                    <form id="destroy_{{ $lesson->id }}" method="POST"
-                        action="{{ route('lessons.destroy', ['lesson' => $lesson->id]) }}">
+                    <form id="destroy_{{ $lesson->id }}" method="POST" action="{{ route('lessons.destroy', ['lesson' => $lesson->id]) }}">
                         @csrf
                         @method('DELETE')
-                        <button onclick="return confirm('本当にキャンセルしてもよろしいですか？')"
-                            class="bg-red-500 rounded-md text-white ml-4 py-1 px-2">キャンセル</button>
+                        <button onclick="return confirm('本当にキャンセルしてもよろしいですか？')" class="bg-red-500 rounded-md text-white ml-4 py-1 px-2">キャンセル</button>
                     </form>
                     @endif
                 </div>
@@ -90,45 +88,39 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <div class="max-w-2xl py-4 mx-auto">
                     @if (!empty($reservations))
-                        <div class="text-center py-2">予約情報</div>
-                        <table class="table-auto w-full text-left whitespace-no-wrap">
-                            <thead>
+                    <div class="text-center py-2">予約情報</div>
+                    <table class="table-auto w-full text-left whitespace-no-wrap">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                    予約者名
+                                </th>
+                                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                    予約人数
+                                </th>
+                                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($reservations as $reservation)
+                            <form id="cancel_{{ $reservation['id'] }}" method="POST" action="{{ route('lessons.cancel', ['lesson' => $lesson->id, 'id' => $reservation['id']]) }}">
+                                @csrf
                                 <tr>
-                                    <th
-                                        class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                                        予約者名
-                                    </th>
-                                    <th
-                                        class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                                        予約人数
-                                    </th>
-                                    <th
-                                        class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                                    </th>
+                                    <td class="text-blue-500 px-4 py-3">
+                                        <a href="mailto:{{ $reservation['email'] }}">{{ $reservation['name'] }}</a>
+                                    </td>
+                                    <td class="px-4 py-3">{{ $reservation['number_of_people'] }}</td>
+                                    <td class="px-4 py-3">
+                                        @if ($lesson->lessonDate >= \Carbon\Carbon::today()->format('Y年m月d日'))
+                                        <button onclick="return confirm('本当にキャンセルしてもよろしいですか？')" class="bg-red-500 rounded-md text-white ml-4 py-1 px-2">キャンセル</button>
+                                        @endif
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($reservations as $reservation)
-                                    <form id="cancel_{{ $reservation['id'] }}" method="POST"
-                                        action="{{ route('lessons.cancel', ['lesson' => $lesson->id, 'id' => $reservation['id']]) }}">
-                                        @csrf
-                                        <tr>
-                                            <td class="text-blue-500 px-4 py-3">
-                                                <a
-                                                    href="mailto:{{ $reservation['email'] }}">{{ $reservation['name'] }}</a>
-                                            </td>
-                                            <td class="px-4 py-3">{{ $reservation['number_of_people'] }}</td>
-                                            <td class="px-4 py-3">
-                                                @if ($lesson->lessonDate >= \Carbon\Carbon::today()->format('Y年m月d日'))
-                                                    <button onclick="return confirm('本当にキャンセルしてもよろしいですか？')"
-                                                        class="bg-red-500 rounded-md text-white ml-4 py-1 px-2">キャンセル</button>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    </form>
-                                @endforeach
-                            </tbody>
-                        </table>
+                            </form>
+                            @endforeach
+                        </tbody>
+                    </table>
                     @endif
                 </div>
             </div>

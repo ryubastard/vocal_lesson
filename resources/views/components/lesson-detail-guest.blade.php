@@ -21,10 +21,6 @@
 
                     <form method="GET" action="{{ route('lessons.confirmation', ['id' => $lesson->id]) }}">
 
-                        <div style="text-align: center;" class="text-red-500 text-xs">
-                            <p class="my-4">予約にはログインが必要です</p>
-                        </div>
-
                         <div>
                             <x-label for="lesson_name" value="レッスン名" />
                             {{ $lesson->name }}

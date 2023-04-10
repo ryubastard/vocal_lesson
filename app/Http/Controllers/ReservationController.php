@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Lesson;
 use App\Models\Reservation;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Http\Requests\NewUserAndLessonRequest;
 
 class ReservationController extends Controller
 {
@@ -105,6 +107,23 @@ class ReservationController extends Controller
      */
     public function create($id)
     {
-        return view('dashboard/register');
+        $lesson = Lesson::findOrFail($id);
+        return view('dashboard/register', compact('lesson'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function verify(NewUserAndLessonRequest $request, $id)
+    {
+        $name = $request['name'];
+        $kana = $request['kana'];
+        $email = $request['email'];
+        $password = Hash::make($request['password']);
+        $lesson = Lesson::findOrFail($id);
+
+        return view('dashboard/register-confirmation', compact('name', 'kana', 'email', 'password', 'lesson'));
     }
 }

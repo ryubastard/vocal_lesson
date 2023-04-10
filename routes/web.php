@@ -17,6 +17,10 @@ use App\Http\Controllers\MyPageController;
 |
 */
 
+Route::get('/register', function () {
+    abort(404);
+});
+
 Route::get('/', function () {
     return view('calendar');
 });
@@ -34,13 +38,13 @@ Route::middleware('can:user-higher')->group(function () {
     Route::get('/mypage',  [MyPageController::class, 'index'])->name('mypage.index');
     Route::get('/mypage/{id}',  [MyPageController::class, 'show'])->name('mypage.show');
     Route::post('/mypage/{id}', [MyPageController::class, 'cancel'])->name('mypage.cancel');
-    // Route::get('/{id}',  [ReservationController::class, 'detail'])->name('lessons.detail');
     Route::post('/{id}',  [ReservationController::class, 'reserve'])->name('lessons.reserve');
 });
 
 Route::get('/{id}',  [ReservationController::class, 'detail'])->name('lessons.detail');
 Route::get('/confirmation/{id}',  [ReservationController::class, 'confirmation'])->name('lessons.confirmation');
 Route::get('/store/{id}',  [ReservationController::class, 'create'])->name('lessons.store');
+Route::post('/register/confirmation/{id}', [ReservationController::class, 'verify'])->name('register.verification');
 
 Route::middleware([
     'auth:sanctum',
