@@ -43,7 +43,7 @@ Route::middleware('can:user-higher')->group(function () {
 
 Route::get('/{id}',  [ReservationController::class, 'detail'])->name('lessons.detail');
 Route::get('/confirmation/{id}',  [ReservationController::class, 'confirmation'])->name('lessons.confirmation');
-Route::get('/store/{id}',  [ReservationController::class, 'create'])->name('lessons.store');
+Route::get('/store/{id}/{id2}',  [ReservationController::class, 'create'])->name('registration.store');
 Route::post('/register/confirmation/{id}', [ReservationController::class, 'verify'])->name('register.verification');
 
 Route::middleware([

@@ -155,6 +155,7 @@ return [
 
     'attributes' => [
         'name' => '名前',
+        'kana' => 'カナ',
         'email' => 'メールアドレス',
         'password' => 'パスワード',
         'event_name' => 'イベント名',

@@ -16,9 +16,9 @@
                     <x-validation-errors class="mb-4" />
 
                     @if (session('status'))
-                    <div class="mb-4 font-medium text-sm text-green-600">
-                        {{ session('status') }}
-                    </div>
+                        <div class="mb-4 font-medium text-sm text-green-600">
+                            {{ session('status') }}
+                        </div>
                     @endif
 
                     <div class="mt-4">
@@ -41,6 +41,11 @@
                         {{ $lesson->lessonDate }} {{ $lesson->startTime }}～{{ $lesson->endTime }}
                         <span class="text-blue-500 cursor-pointer ml-2" onclick="location.href='/'">選びなおす</span>
                     </div>
+
+                    <div class="mt-4">
+                        <x-label for="price" value="予約人数" />
+                        {{ $reserved_people }}名
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,45 +61,60 @@
 
                         <div>
                             <x-label for="name" value="お名前" />
-                            <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+                            <x-input id="name" class="block mt-1 w-full" type="text" name="name"
+                                :value="old('name')" required autofocus autocomplete="name" />
                         </div>
 
                         <div class="mt-4">
                             <x-label for="kana" value="カナ" />
-                            <x-input id="kana" class="block mt-1 w-full" type="text" name="kana" :value="old('kana')" required autofocus autocomplete="kana" />
+                            <x-input id="kana" class="block mt-1 w-full" type="text" name="kana"
+                                :value="old('kana')" required autofocus autocomplete="kana" />
                         </div>
 
 
                         <div class="mt-4">
                             <x-label for="email" value="メールアドレス" />
-                            <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+                            <x-input id="email" class="block mt-1 w-full" type="email" name="email"
+                                :value="old('email')" required autocomplete="username" />
                         </div>
 
                         <div class="mt-4">
                             <x-label for="password" value="パスワード" />
-                            <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
+                            <x-input id="password" class="block mt-1 w-full" type="password" name="password" required
+                                autocomplete="new-password" />
                         </div>
 
                         <div class="mt-4">
                             <x-label for="password_confirmation" value="パスワード確認用" />
-                            <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
+                            <x-input id="password_confirmation" class="block mt-1 w-full" type="password"
+                                name="password_confirmation" required autocomplete="new-password" />
                         </div>
 
                         @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                        <div class="mt-4">
-                            <x-label for="terms">
-                                <div class="flex items-center">
-                                    <x-checkbox name="terms" id="terms" required />
+                            <div class="mt-4">
+                                <x-label for="terms">
+                                    <div class="flex items-center">
+                                        <x-checkbox name="terms" id="terms" required />
 
-                                    <div class="ml-2">
-                                        {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Terms of Service').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">'.__('Privacy Policy').'</a>',
-                                        ]) !!}
+                                        <div class="ml-2">
+                                            {!! __('I agree to the :terms_of_service and :privacy_policy', [
+                                                'terms_of_service' =>
+                                                    '<a target="_blank" href="' .
+                                                    route('terms.show') .
+                                                    '" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">' .
+                                                    __('Terms of Service') .
+                                                    '</a>',
+                                                'privacy_policy' =>
+                                                    '<a target="_blank" href="' .
+                                                    route('policy.show') .
+                                                    '" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">' .
+                                                    __('Privacy Policy') .
+                                                    '</a>',
+                                            ]) !!}
+                                        </div>
                                     </div>
-                                </div>
-                            </x-label>
-                        </div>
+                                </x-label>
+                            </div>
                         @endif
 
                         <div class="flex items-center justify-end mt-4">

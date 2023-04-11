@@ -12,11 +12,14 @@
                     <div style="text-align: center;">
                         <p class="my-4">予約にはログインが必要です</p>
                         <div class="flex items-center justify-center mt-4">
-                            <button onclick="location.href='{{ route('login') }}'" class="bg-cyan-200 text-white py-2 px-6 rounded-full hover:bg-cyan-300">ログイン</button>
+                            <button onclick="location.href='{{ route('login') }}'"
+                                class="bg-cyan-200 text-white py-2 px-6 rounded-full hover:bg-cyan-300">ログイン</button>
                         </div>
                         <div class="flex items-center justify-center mt-4">
-                            <input type="hidden" name="id" value="{{ $id }}">
-                            <button onclick="location.href='{{ route('lessons.store', ['id' => $id]) }}'" class="bg-black text-white py-2 px-6 rounded-full">初めての方はこちらから</button>
+                            <input type="hidden" name="reserved_people" value="{{ $reserved_people }}">
+                            <button
+                                onclick="location.href='{{ route('registration.store', ['id' => $id, 'id2' => $reserved_people]) }}'"
+                                class="bg-black text-white py-2 px-6 rounded-full">初めての方はこちらから</button>
                         </div>
                     </div>
                 </div>

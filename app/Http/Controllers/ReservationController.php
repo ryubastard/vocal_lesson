@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Lesson;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Hash;
@@ -95,9 +96,10 @@ class ReservationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function confirmation($id)
+    public function confirmation(Request $request, $id)
     {
-        return view('dashboard/confirmation', compact('id'));
+        $reserved_people = $request['reserved_people'];
+        return view('dashboard/confirmation', compact('id', 'reserved_people'));
     }
 
     /**
@@ -105,10 +107,10 @@ class ReservationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id)
+    public function create(Request $request, $id, $reserved_people)
     {
         $lesson = Lesson::findOrFail($id);
-        return view('dashboard/register', compact('lesson'));
+        return view('dashboard/register', compact('lesson', 'reserved_people'));
     }
 
     /**
@@ -125,5 +127,32 @@ class ReservationController extends Controller
         $lesson = Lesson::findOrFail($id);
 
         return view('dashboard/register-confirmation', compact('name', 'kana', 'email', 'password', 'lesson'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreLessonRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $user_id = User::latest('id')->value('id') + 1;
+
+        User::create([
+            'id' => $user_id,
+            'name' => $request['name'],
+            'kana' => $request['kana'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+            'role' => 9,
+        ]);
+
+        Reservation::create([
+            'user_id' => $user_id,
+            'lesson_id' => $lesson->id,
+            'email' => $request['email'],
+            'number_of_people' => $request->reserved_people,
+        ]);
     }
 }
