@@ -64,7 +64,7 @@ class ReservationController extends Controller
      */
     public function reserve(Request $request)
     {
-        $event = Lesson::findOrFail($request->id);
+        $lesson = Lesson::findOrFail($request->id);
         $reservedPeople = DB::table('reservations')
             ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
             ->groupBy('lesson_id')
@@ -73,7 +73,7 @@ class ReservationController extends Controller
 
         if (
             is_null($reservedPeople) ||
-            $event->max_people >= $reservedPeople->number_of_people + $request->reserved_people
+            $lesson->max_people >= $reservedPeople->number_of_people + $request->reserved_people
         ) {
             Reservation::create([
                 'user_id' => Auth::id(),
@@ -99,7 +99,10 @@ class ReservationController extends Controller
     public function confirmation(Request $request, $id)
     {
         $reserved_people = $request['reserved_people'];
-        return view('dashboard/confirmation', compact('id', 'reserved_people'));
+        // コントローラーでセッションに値を保存する
+        $request->session()->put('reserved_people', $reserved_people);
+
+        return view('dashboard/confirmation', compact('id'));
     }
 
     /**
@@ -107,9 +110,12 @@ class ReservationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request, $id, $reserved_people)
+    public function create(Request $request, $id)
     {
         $lesson = Lesson::findOrFail($id);
+        // 次の画面でセッションから値を取得する
+        $reserved_people = $request->session()->get('reserved_people');
+
         return view('dashboard/register', compact('lesson', 'reserved_people'));
     }
 
@@ -124,9 +130,32 @@ class ReservationController extends Controller
         $kana = $request['kana'];
         $email = $request['email'];
         $password = Hash::make($request['password']);
-        $lesson = Lesson::findOrFail($id);
 
-        return view('dashboard/register-confirmation', compact('name', 'kana', 'email', 'password', 'lesson'));
+        session([
+            'name' => $name,
+            'kana' => $kana,
+            'email' => $email,
+            'password' => $password,
+        ]);
+
+        $lesson = Lesson::findOrFail($id);
+        $reserved_people = $request->session()->get('reserved_people');
+
+        $reservedPeople = DB::table('reservations')
+            ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
+            ->groupBy('lesson_id')
+            ->having('lesson_id', $id)
+            ->first();
+
+        if (
+            is_null($reservedPeople) ||
+            $lesson->max_people >= $reservedPeople->number_of_people + $reserved_people
+        ) {
+            return view('dashboard/register-confirmation', compact('name', 'kana', 'email', 'password', 'lesson'));
+        } else {
+            session()->flash('status', 'この人数は予約できません。');
+            return to_route('registration.create', ['id' => $id]);
+        }
     }
 
     /**
@@ -135,24 +164,28 @@ class ReservationController extends Controller
      * @param  \App\Http\Requests\StoreLessonRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $id)
     {
+        $lesson = Lesson::findOrFail($id);
         $user_id = User::latest('id')->value('id') + 1;
 
         User::create([
             'id' => $user_id,
-            'name' => $request['name'],
-            'kana' => $request['kana'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password']),
+            'name' => $request->session()->get('name'),
+            'kana' => $request->session()->get('kana'),
+            'email' => $request->session()->get('email'),
+            'password' => $request->session()->get('password'),
             'role' => 9,
         ]);
 
         Reservation::create([
             'user_id' => $user_id,
             'lesson_id' => $lesson->id,
-            'email' => $request['email'],
-            'number_of_people' => $request->reserved_people,
+            'email' => $request->session()->get('email'),
+            'number_of_people' => $request->session()->get('reserved_people'),
         ]);
+
+        session()->flush();
+        return view('dashboard/register-completed');
     }
 }

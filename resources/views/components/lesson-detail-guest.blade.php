@@ -19,8 +19,8 @@
                     </div>
                     @endif
 
-                    <form method="GET" action="{{ route('lessons.confirmation', ['id' => $lesson->id]) }}">
-
+                    <form method="POST" action="{{ route('lessons.confirmation', ['id' => $lesson->id]) }}">
+                        @csrf
                         <div>
                             <x-label for="lesson_name" value="レッスン名" />
                             {{ $lesson->name }}
@@ -71,8 +71,8 @@
                                     </select>
                                     @endif
                             </div>
-                            <input type="hidden" name="id" value="{{ $lesson->id }}">
                             @if ($resevablePeople > 0)
+
                             @if ($isReserved === null)
                             <div class="flex items-center justify-center mt-4">
                                 <x-button class="ml-4">
