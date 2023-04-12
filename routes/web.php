@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\MyPageController;
-
+use App\Http\Controllers\InformationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +21,11 @@ Route::get('/register', function () {
     abort(404);
 });
 
-Route::get('/', function () {
+Route::get('/', [InformationController::class, 'index'])
+    ->name('information')
+    ->middleware('guest');
+    
+Route::get('/calendar', function () {
     return view('calendar');
 });
 
