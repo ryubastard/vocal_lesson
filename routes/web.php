@@ -24,7 +24,7 @@ Route::get('/register', function () {
 Route::get('/', [InformationController::class, 'index'])
     ->name('information')
     ->middleware('guest');
-    
+
 Route::get('/calendar', function () {
     return view('calendar');
 });
@@ -35,6 +35,10 @@ Route::prefix('manager')
         Route::post('lessons/{lesson}/{id}/', [LessonController::class, 'cancel'])->name('lessons.cancel');
         Route::resource('lessons', LessonController::class);
         Route::get('lessons/{lesson}/{date}', [LessonController::class, 'overview'])->name('lessons.overview');
+
+        Route::get('information', [InformationController::class, 'show'])->name('information.show');
+        Route::get('information/edit', [InformationController::class, 'edit'])->name('information.edit');
+        Route::post('information/edit/{id}', [InformationController::class, 'update'])->name('information.update');
     });
 
 Route::middleware('can:user-higher')->group(function () {
