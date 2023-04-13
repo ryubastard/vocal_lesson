@@ -8,33 +8,32 @@
     <form method="POST" action="{{ route('information.update', ['id' => $information->id]) }}">
         @csrf
         <div class="py-4">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg flex flex-col items-center justify-center">
+            <section class="text-gray-600 body-font">
+                <div class="container mx-auto flex flex-col px-5 py-6 justify-center items-center">
                     <x-validation-errors class="mb-4" />
+
                     @if (session('status'))
-                    <div class="mb-4 font-medium text-sm text-green-600">
-                        {{ session('status') }}
-                    </div>
+                        <div class="mb-4 font-medium text-sm text-green-600">
+                            {{ session('status') }}
+                        </div>
                     @endif
 
-                    @csrf
-
-                    <div class="w-full max-w-md mt-2">
-                        <img src="{{ asset('images/no_image.jpg') }}" class="w-full">
+                    <img class="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded" alt="hero"
+                        src="{{ asset('images/no_image.jpg') }}">
+                    <div class="w-full md:w-2/3 flex flex-col mb-16 items-start">
+                        <b class="sm:text-2xl text-3xl mb-4 font-medium text-gray-900">サービス説明</b>
+                        <x-textarea rows="6" id="information" name="information" class="block mt-1 w-full"
+                            style="width: 80%;">
+                            {{ $information->information }}
+                        </x-textarea>
+                        <div class="flex w-full justify-center items-end">
+                            <x-button class="ml-4 my-3">
+                                確定する
+                            </x-button>
+                        </div>
                     </div>
-
-                    <div class="my-3">
-                        <b>サービス説明</b>
-                    </div>
-                    <x-textarea rows="6" id="information" name="information" class="block mt-1 w-full" style="width: 65%;">
-                        {{ $information->information }}
-                    </x-textarea>
-
-                    <x-button class="ml-4 my-3">
-                        編集する
-                    </x-button>
                 </div>
-            </div>
+            </section>
         </div>
     </form>
 
