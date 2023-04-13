@@ -7,6 +7,7 @@ use App\Models\Lesson;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Auth;
 use App\Services\MyPageService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class MyPageController extends Controller
@@ -55,8 +56,24 @@ class MyPageController extends Controller
             ->where('lesson_id', '=', $id)
             ->latest()
             ->first();
-
         $reservation->delete();
+
+        $lesson = Lesson::findOrFail($id);
+        $reservedPeople = DB::table('reservations')
+            ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
+            ->groupBy('lesson_id')
+            ->having('lesson_id', $id)
+            ->first();
+
+        if (
+            is_null($reservedPeople) ||
+            $lesson->max_people < $reservedPeople->number_of_people
+        ) {
+            $lesson->is_visible = 1;
+        } else {
+            $lesson->is_visible = 0;
+        }
+        $lesson->save();
 
         session()->flash('status', 'キャンセルしました。');
         return to_route('dashboard');

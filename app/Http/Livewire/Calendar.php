@@ -37,8 +37,6 @@ class Calendar extends Component
                 'dayOfWeek' => $this->dayOfWeek  
             ]);
         }
-
-        // dd($this->currentWeek);
     }
 
     public function getDate($date)

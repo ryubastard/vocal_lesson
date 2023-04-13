@@ -55,6 +55,7 @@ class LessonService
                 $join->on('lessons.id', '=', 'reservedPeople.lesson_id');
             })
             ->whereBetween('start_date', [$startDate, $endDate])
+            ->where('is_visible', 1) 
             ->orderBy('start_date', 'asc')
             ->get();
     }

@@ -82,6 +82,15 @@ class ReservationController extends Controller
                 'number_of_people' => $request->reserved_people,
             ]);
 
+            $lesson = Lesson::findOrFail($request->id);
+            dd(($lesson->max_people >= $reservedPeople->number_of_people + $request->reserved_people));
+
+            if (is_null($reservedPeople) || $lesson->max_people >= $reservedPeople->number_of_people + $request->reserved_people) {
+                $lesson = lesson::findOrFail($lesson->id);
+                $lesson->is_visible = 0;
+                $lesson->save();
+            }
+
             session()->flash('status', '予約しました。');
             return to_route('dashboard');
         } else {

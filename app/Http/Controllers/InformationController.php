@@ -52,9 +52,24 @@ class InformationController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // リクエストから画像ファイルを取得する
+        $image = $request->file('image');
+
+        if ($image) {
+            $extension = $image->getClientOriginalExtension(); // 拡張子を取得する
+            $filename = time() . '.' . $extension; // 拡張子を含めたファイル名を作成する
+            $image->storeAs('public/images', $filename);
+        }
+
         // 保存処理
         $information = Information::first();
         $information->information = $request['information'];
+
+        if ($request->has('delete_image')) {
+            $information->image = null; // 画像を削除する場合は、nullを設定する
+        } elseif ($image) {
+            $information->image = $filename;
+        }
         $information->save();
 
         session()->flash('status', '更新完了');

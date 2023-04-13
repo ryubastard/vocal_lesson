@@ -11,13 +11,16 @@
                 <x-validation-errors class="mb-4" />
 
                 @if (session('status'))
-                    <div class="mb-4 font-medium text-sm text-green-600">
-                        {{ session('status') }}
-                    </div>
+                <div class="mb-4 font-medium text-sm text-green-600">
+                    {{ session('status') }}
+                </div>
                 @endif
-                
-                <img class="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded" alt="hero"
-                    src="{{ asset('images/no_image.jpg') }}">
+
+                @if ($information->image)
+                <img class="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded" alt="hero" src="{{ asset('storage/images/' . $information->image) }}">
+                @else
+                <img class="lg:w-2/6 md:w-3/6 w-5/6 mb-10 object-cover object-center rounded" alt="no image" src="{{ asset('images/no_image.jpg') }}">
+                @endif
                 <div class="w-full md:w-2/3 flex flex-col mb-16 items-start">
                     <b class="sm:text-2xl text-3xl mb-4 font-medium text-gray-900">サービス説明</b>
                     <p class="mb-8 leading-relaxed text-lg">{!! nl2br(e($information->information)) !!}</p>
