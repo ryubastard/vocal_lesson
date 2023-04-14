@@ -209,43 +209,53 @@ class LessonController extends Controller
      */
     public function update(UpdatelessonRequest $request, lesson $lesson)
     {
-        //重複チェック
-        $check = lessonService::countlessonDuplication(
-            $request['lesson_date'],
-            $request['start_time'],
-            $request['end_time']
-        );
+        try {
+            DB::beginTransaction();
 
-        if ($check > 1) {
-            session()->flash('status', 'この時間帯は既に他の予約が存在します。');
-            $lesson = lesson::findOrFail($lesson->id);
-            $lessonDate = $lesson->editlessonDate;
-            $startTime = $lesson->startTime;
-            $endTime = $lesson->endTime;
-            return view(
-                'manager.lessons.edit',
-                compact('lesson', 'lessonDate', 'startTime', 'endTime')
+            //重複チェック
+            $check = lessonService::countlessonDuplication(
+                $request['lesson_date'],
+                $request['start_time'],
+                $request['end_time']
             );
+
+            if ($check > 1) {
+                session()->flash('status', 'この時間帯は既に他の予約が存在します。');
+                $lesson = lesson::findOrFail($lesson->id);
+                $lessonDate = $lesson->editlessonDate;
+                $startTime = $lesson->startTime;
+                $endTime = $lesson->endTime;
+                return view(
+                    'manager.lessons.edit',
+                    compact('lesson', 'lessonDate', 'startTime', 'endTime')
+                );
+            }
+
+            $startDate = lessonService::joinDateAndTime($request['lesson_date'], $request['start_time']);
+            $endDate = lessonService::joinDateAndTime($request['lesson_date'], $request['end_time']);
+
+            // 保存処理
+            $lesson = lesson::findOrFail($lesson->id);
+            $lesson->name = $request['lesson_name'];
+            $lesson->location = $request['location'];
+            $lesson->price = $request['price'];
+            $lesson->start_date = $startDate;
+            $lesson->end_date = $endDate;
+            $lesson->max_people = $request['max_people'];
+            $lesson->is_visible = $request['is_visible'];
+            $lesson->save();
+
+            DB::commit();
+
+            session()->flash('status', '更新完了');
+            return to_route('lessons.index'); //名前付きルート
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            session()->flash('status', '更新に失敗しました。');
+            return back()->withInput();
         }
-
-        $startDate = lessonService::joinDateAndTime($request['lesson_date'], $request['start_time']);
-        $endDate = lessonService::joinDateAndTime($request['lesson_date'], $request['end_time']);
-
-        // 保存処理
-        $lesson = lesson::findOrFail($lesson->id);
-        $lesson->name = $request['lesson_name'];
-        $lesson->location = $request['location'];
-        $lesson->price = $request['price'];
-        $lesson->start_date = $startDate;
-        $lesson->end_date = $endDate;
-        $lesson->max_people = $request['max_people'];
-        $lesson->is_visible = $request['is_visible'];
-        $lesson->save();
-
-        session()->flash('status', '更新完了');
-        return to_route('lessons.index'); //名前付きルート
     }
-
     /**
      * Remove the specified resource from storage.
      *
