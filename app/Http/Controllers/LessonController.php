@@ -292,48 +292,57 @@ class LessonController extends Controller
      */
     public function destroy(lesson $lesson)
     {
-        $lesson = lesson::findOrFail($lesson->id);
-        $location = $lesson->location;
-        $date = substr($lesson->start_date, 0, 10);
+        DB::beginTransaction();
 
-        $users = $lesson->users;
+        try {
+            $lesson = lesson::findOrFail($lesson->id);
+            $location = $lesson->location;
+            $date = substr($lesson->start_date, 0, 10);
 
-        $reservations = []; // 連想配列を作成 
-        foreach ($users as $user) {
-            $reservedInfo = [
-                'id' => $user->id,
-                'name' => $user->name,
-                'number_of_people' => $user->pivot->number_of_people,
-                'email' => $user->pivot->email,
-            ];
-            array_push($reservations, $reservedInfo); // 連想配列に追加
+            $users = $lesson->users;
+
+            $reservations = []; // 連想配列を作成 
+            foreach ($users as $user) {
+                $reservedInfo = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'number_of_people' => $user->pivot->number_of_people,
+                    'email' => $user->pivot->email,
+                ];
+                array_push($reservations, $reservedInfo); // 連想配列に追加
+            }
+
+            if ($reservations) { // 予約者の有無確認
+                session()->flash('status', '予約している人が存在するため、キャンセルできません。');
+
+                $lessonDate = $lesson->lessonDate;
+                $startTime = $lesson->startTime;
+                $endTime = $lesson->endTime;
+
+                return view(
+                    'manager.lessons.show',
+                    compact(
+                        'lesson',
+                        'users',
+                        'reservations',
+                        'lessonDate',
+                        'startTime',
+                        'endTime'
+                    )
+                );
+            }
+
+            $lesson->delete();
+
+            DB::commit();
+
+            session()->flash('status', 'キャンセルしました。');
+
+            return to_route('lessons.index'); //名前付きルート
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw $e;
         }
-
-        if ($reservations) { // 予約者の有無確認
-            session()->flash('status', '予約している人が存在するため、キャンセルできません。');
-
-            $lessonDate = $lesson->lessonDate;
-            $startTime = $lesson->startTime;
-            $endTime = $lesson->endTime;
-
-            return view(
-                'manager.lessons.show',
-                compact(
-                    'lesson',
-                    'users',
-                    'reservations',
-                    'lessonDate',
-                    'startTime',
-                    'endTime'
-                )
-            );
-        }
-
-        $lesson->delete();
-
-        session()->flash('status', 'キャンセルしました。');
-
-        return to_route('lessons.index'); //名前付きルート
     }
 
     /**
@@ -344,20 +353,22 @@ class LessonController extends Controller
      */
     public function cancel($lesson, $id)
     {
-        $reservation = Reservation::where('user_id', '=', $id)
-            ->where('lesson_id', '=', $lesson)
-            ->latest()
-            ->first();
+        DB::transaction(function () use ($lesson, $id) {
+            $reservation = Reservation::where('user_id', '=', $id)
+                ->where('lesson_id', '=', $lesson)
+                ->latest()
+                ->first();
 
-        $reservation->delete();
+            $reservation->delete();
 
-        // 予約がキャンセルされたレッスンの空き人数がレッスンの最大人数未満である場合、lessonsテーブルのis_visibleカラムを1に変更する
-        $reservedPeople = Reservation::where('lesson_id', '=', $lesson)->sum('number_of_people');
-        $lesson = Lesson::findOrFail($lesson);
-        if ($lesson->max_people > $reservedPeople) {
-            $lesson->is_visible = 1;
-            $lesson->save();
-        }
+            // 予約がキャンセルされたレッスンの空き人数がレッスンの最大人数未満である場合、lessonsテーブルのis_visibleカラムを1に変更する
+            $reservedPeople = Reservation::where('lesson_id', '=', $lesson)->sum('number_of_people');
+            $lesson = Lesson::findOrFail($lesson);
+            if ($lesson->max_people > $reservedPeople) {
+                $lesson->is_visible = 1;
+                $lesson->save();
+            }
+        });
 
         session()->flash('status', 'キャンセルしました。');
         return back();

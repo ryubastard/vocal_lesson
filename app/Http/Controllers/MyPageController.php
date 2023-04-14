@@ -52,22 +52,32 @@ class MyPageController extends Controller
      */
     public function cancel($id)
     {
-        $reservation = Reservation::where('user_id', '=', Auth::id())
-            ->where('lesson_id', '=', $id)
-            ->latest()
-            ->first();
+        try {
+            DB::beginTransaction();
 
-        $reservation->delete();
+            $reservation = Reservation::where('user_id', '=', Auth::id())
+                ->where('lesson_id', '=', $id)
+                ->latest()
+                ->first();
 
-        // 予約がキャンセルされたレッスンの空き人数がレッスンの最大人数未満である場合、lessonsテーブルのis_visibleカラムを1に変更する
-        $reservedPeople = Reservation::where('lesson_id', '=', $id)->sum('number_of_people');
-        $lesson = Lesson::findOrFail($id);
-        if ($lesson->max_people > $reservedPeople) {
-            $lesson->is_visible = 1;
-            $lesson->save();
+            $reservation->delete();
+
+            // 予約がキャンセルされたレッスンの空き人数がレッスンの最大人数未満である場合、lessonsテーブルのis_visibleカラムを1に変更する
+            $reservedPeople = Reservation::where('lesson_id', '=', $id)->sum('number_of_people');
+            $lesson = Lesson::findOrFail($id);
+            if ($lesson->max_people > $reservedPeople) {
+                $lesson->is_visible = 1;
+                $lesson->save();
+            }
+
+            DB::commit();
+
+            session()->flash('status', 'キャンセルしました。');
+            return to_route('dashboard');
+        } catch (\Exception $e) {
+            DB::rollback();
+            session()->flash('status', 'キャンセルできませんでした。');
+            return to_route('dashboard');
         }
-
-        session()->flash('status', 'キャンセルしました。');
-        return to_route('dashboard');
     }
 }

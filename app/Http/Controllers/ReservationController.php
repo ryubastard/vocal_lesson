@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\NewUserAndLessonRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ReservationController extends Controller
 {
@@ -64,36 +65,38 @@ class ReservationController extends Controller
      */
     public function reserve(Request $request)
     {
-        $lesson = Lesson::findOrFail($request->id);
-        $reservedPeople = DB::table('reservations')
-            ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
-            ->groupBy('lesson_id')
-            ->having('lesson_id', $request->id)
-            ->first();
+        DB::transaction(function () use ($request) {
+            $lesson = Lesson::findOrFail($request->id);
+            $reservedPeople = DB::table('reservations')
+                ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
+                ->groupBy('lesson_id')
+                ->having('lesson_id', $request->id)
+                ->first();
 
-        if (
-            is_null($reservedPeople) ||
-            $lesson->max_people >= $reservedPeople->number_of_people + $request->reserved_people
-        ) {
-            Reservation::create([
-                'user_id' => Auth::id(),
-                'lesson_id' => $request->id,
-                'email' => Auth::user()->email,
-                'number_of_people' => $request->reserved_people,
-            ]);
+            if (
+                is_null($reservedPeople) ||
+                $lesson->max_people >= $reservedPeople->number_of_people + $request->reserved_people
+            ) {
+                Reservation::create([
+                    'user_id' => Auth::id(),
+                    'lesson_id' => $request->id,
+                    'email' => Auth::user()->email,
+                    'number_of_people' => $request->reserved_people,
+                ]);
 
-            // 予約が完了した後に、予約人数がレッスンの最大人数を上回っている場合は、lessonsテーブルのis_visibleカラムを0に変更する
-            if ($lesson->max_people <= ($reservedPeople->number_of_people ?? 0) + $request->reserved_people) {
-                $lesson->is_visible = 0;
-                $lesson->save();
+                // 予約が完了した後に、予約人数がレッスンの最大人数を上回っている場合は、lessonsテーブルのis_visibleカラムを0に変更する
+                if ($lesson->max_people <= ($reservedPeople->number_of_people ?? 0) + $request->reserved_people) {
+                    $lesson->is_visible = 0;
+                    $lesson->save();
+                }
+
+                session()->flash('status', '予約しました。');
+                return to_route('dashboard');
+            } else {
+                session()->flash('status', 'この人数は予約できません。');
+                return view('dashboard');
             }
-
-            session()->flash('status', '予約しました。');
-            return to_route('dashboard');
-        } else {
-            session()->flash('status', 'この人数は予約できません。');
-            return view('dashboard');
-        }
+        });
     }
 
     /**
@@ -172,37 +175,48 @@ class ReservationController extends Controller
      */
     public function store(Request $request, $id)
     {
-        $lesson = Lesson::findOrFail($id);
-        $user_id = User::latest('id')->value('id') + 1;
+        DB::beginTransaction();
 
-        User::create([
-            'id' => $user_id,
-            'name' => $request->session()->get('name'),
-            'kana' => $request->session()->get('kana'),
-            'email' => $request->session()->get('email'),
-            'password' => $request->session()->get('password'),
-            'role' => 9,
-        ]);
+        try {
+            $lesson = Lesson::findOrFail($id);
+            $user_id = User::latest('id')->value('id') + 1;
 
-        Reservation::create([
-            'user_id' => $user_id,
-            'lesson_id' => $lesson->id,
-            'email' => $request->session()->get('email'),
-            'number_of_people' => $request->session()->get('reserved_people'),
-        ]);
+            User::create([
+                'id' => $user_id,
+                'name' => $request->session()->get('name'),
+                'kana' => $request->session()->get('kana'),
+                'email' => $request->session()->get('email'),
+                'password' => $request->session()->get('password'),
+                'role' => 9,
+            ]);
 
-        // 予約人数がレッスンの定員を上回る場合に、is_visibleを0に更新する
-        $reservedPeople = Reservation::select(DB::raw('sum(number_of_people) as number_of_people'))
-            ->where('lesson_id', '=', $id)
-            ->first();
+            Reservation::create([
+                'user_id' => $user_id,
+                'lesson_id' => $lesson->id,
+                'email' => $request->session()->get('email'),
+                'number_of_people' => $request->session()->get('reserved_people'),
+            ]);
 
-        // 予約が完了した後に、予約人数がレッスンの最大人数を上回っている場合は、lessonsテーブルのis_visibleカラムを0に変更する
-        if ($lesson->max_people <= ($reservedPeople->number_of_people ?? 0) + $request->reserved_people) {
-            $lesson->is_visible = 0;
-            $lesson->save();
+            // 予約人数がレッスンの定員を上回る場合に、is_visibleを0に更新する
+            $reservedPeople = Reservation::select(DB::raw('sum(number_of_people) as number_of_people'))
+                ->where('lesson_id', '=', $id)
+                ->first();
+
+            // 予約が完了した後に、予約人数がレッスンの最大人数を上回っている場合は、lessonsテーブルのis_visibleカラムを0に変更する
+            if ($lesson->max_people <= ($reservedPeople->number_of_people ?? 0) + $request->reserved_people) {
+                $lesson->is_visible = 0;
+                $lesson->save();
+            }
+
+            session()->flush();
+            DB::commit();
+            return view('dashboard/register-completed');
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            abort(404);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
-
-        session()->flush();
-        return view('dashboard/register-completed');
     }
 }
