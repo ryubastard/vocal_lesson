@@ -1,7 +1,9 @@
 <x-guest-layout>
     <x-authentication-card>
         <x-slot name="logo">
-            <x-authentication-card-logo />
+            <div class="w-40">
+                <img src="{{ asset('images/logo.png') }}">
+            </div>
         </x-slot>
 
         <div class="mb-4 text-sm text-gray-600">
@@ -20,8 +22,9 @@
             @csrf
 
             <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                <x-label for="email" value="メールアドレス" />
+                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')"
+                    required autofocus autocomplete="username" />
             </div>
 
             <div class="flex items-center justify-end mt-4">

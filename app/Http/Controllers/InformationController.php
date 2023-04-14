@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Information;
+use Illuminate\Support\Facades\DB;
 
 class InformationController extends Controller
 {
@@ -52,27 +53,38 @@ class InformationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // リクエストから画像ファイルを取得する
-        $image = $request->file('image');
+        DB::beginTransaction(); // トランザクションを開始する
 
-        if ($image) {
-            $extension = $image->getClientOriginalExtension(); // 拡張子を取得する
-            $filename = time() . '.' . $extension; // 拡張子を含めたファイル名を作成する
-            $image->storeAs('public/images', $filename);
+        try {
+            // リクエストから画像ファイルを取得する
+            $image = $request->file('image');
+
+            if ($image) {
+                $extension = $image->getClientOriginalExtension(); // 拡張子を取得する
+                $filename = time() . '.' . $extension; // 拡張子を含めたファイル名を作成する
+                $image->storeAs('public/images', $filename);
+            }
+
+            // 保存処理
+            $information = Information::first();
+            $information->information = $request['information'];
+
+            if ($request->has('delete_image')) {
+                $information->image = null; // 画像を削除する場合は、nullを設定する
+            } elseif ($image) {
+                $information->image = $filename;
+            }
+            $information->save();
+
+            DB::commit(); // すべての処理が正常に完了した場合はコミットする
+
+            session()->flash('status', '更新完了');
+            return to_route('information.show'); //名前付きルート
+            
+        } catch (Exception $e) {
+            DB::rollback(); // エラーが発生した場合はロールバックする
+            session()->flash('status', '更新に失敗しました。');
+            return back()->withErrors(['update' => $e->getMessage()]);
         }
-
-        // 保存処理
-        $information = Information::first();
-        $information->information = $request['information'];
-
-        if ($request->has('delete_image')) {
-            $information->image = null; // 画像を削除する場合は、nullを設定する
-        } elseif ($image) {
-            $information->image = $filename;
-        }
-        $information->save();
-
-        session()->flash('status', '更新完了');
-        return to_route('information.show'); //名前付きルート
     }
 }
