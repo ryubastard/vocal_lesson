@@ -82,11 +82,8 @@ class ReservationController extends Controller
                 'number_of_people' => $request->reserved_people,
             ]);
 
-            $lesson = Lesson::findOrFail($request->id);
-            dd(($lesson->max_people >= $reservedPeople->number_of_people + $request->reserved_people));
-
-            if (is_null($reservedPeople) || $lesson->max_people >= $reservedPeople->number_of_people + $request->reserved_people) {
-                $lesson = lesson::findOrFail($lesson->id);
+            // 予約が完了した後に、予約人数がレッスンの最大人数を上回っている場合は、lessonsテーブルのis_visibleカラムを0に変更する
+            if ($lesson->max_people <= ($reservedPeople->number_of_people ?? 0) + $request->reserved_people) {
                 $lesson->is_visible = 0;
                 $lesson->save();
             }

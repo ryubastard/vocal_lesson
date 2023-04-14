@@ -56,24 +56,16 @@ class MyPageController extends Controller
             ->where('lesson_id', '=', $id)
             ->latest()
             ->first();
+
         $reservation->delete();
 
+        // 予約がキャンセルされたレッスンの空き人数がレッスンの最大人数未満である場合、lessonsテーブルのis_visibleカラムを1に変更する
+        $reservedPeople = Reservation::where('lesson_id', '=', $id)->sum('number_of_people');
         $lesson = Lesson::findOrFail($id);
-        $reservedPeople = DB::table('reservations')
-            ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
-            ->groupBy('lesson_id')
-            ->having('lesson_id', $id)
-            ->first();
-
-        if (
-            is_null($reservedPeople) ||
-            $lesson->max_people < $reservedPeople->number_of_people
-        ) {
+        if ($lesson->max_people > $reservedPeople) {
             $lesson->is_visible = 1;
-        } else {
-            $lesson->is_visible = 0;
+            $lesson->save();
         }
-        $lesson->save();
 
         session()->flash('status', 'キャンセルしました。');
         return to_route('dashboard');

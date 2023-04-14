@@ -341,6 +341,14 @@ class LessonController extends Controller
 
         $reservation->delete();
 
+        // 予約がキャンセルされたレッスンの空き人数がレッスンの最大人数未満である場合、lessonsテーブルのis_visibleカラムを1に変更する
+        $reservedPeople = Reservation::where('lesson_id', '=', $lesson)->sum('number_of_people');
+        $lesson = Lesson::findOrFail($lesson);
+        if ($lesson->max_people > $reservedPeople) {
+            $lesson->is_visible = 1;
+            $lesson->save();
+        }
+
         session()->flash('status', 'キャンセルしました。');
         return back();
     }
