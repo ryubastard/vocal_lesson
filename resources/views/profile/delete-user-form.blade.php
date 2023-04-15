@@ -12,9 +12,17 @@
         </div>
 
         <div class="mt-5">
+            @if($reservations->isNotEmpty())
+            <div class="max-w-xl text-sm text-red-600">
+                <b>予約している最新のレッスンがあります。マイページより削除処理を行ってください。</b>
+                <div class="flex items-center justify-left mt-4">
+                <x-button onclick="location.href='{{ route('mypage.index') }}'" class="mr-3">マイページ</x-button>                </div>
+            </div>
+            @else
             <x-danger-button wire:click="confirmUserDeletion" wire:loading.attr="disabled">
                 アカウント削除
             </x-danger-button>
+            @endif
         </div>
 
         <!-- Delete User Confirmation Modal -->
