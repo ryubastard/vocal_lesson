@@ -60,23 +60,32 @@ class InformationController extends Controller
 
         try {
             // リクエストから画像ファイルを取得する
-            $image = $request->file('image');
+            $images = [];
 
-            if ($image) {
-                $extension = $image->getClientOriginalExtension(); // 拡張子を取得する
-                $filename = time() . '.' . $extension; // 拡張子を含めたファイル名を作成する
-                $image->storeAs('public/images', $filename);
+            for ($i = 1; $i <= 3; $i++) {
+                $image = $request->file("image{$i}");
+                if ($image) {
+                    $extension = $image->getClientOriginalExtension(); // 拡張子を取得する
+                    $filename = time() . "_{$i}." . $extension; // 拡張子を含めたファイル名を作成する
+                    $image->storeAs('public/images', $filename);
+                    $images["image{$i}"] = $filename;
+                } else {
+                    $images["image{$i}"] = null;
+                }
             }
 
             // 保存処理
             $information = Information::first();
-            $information->information = $request['information'];
+            $information->information = $request->input('information');
 
-            if ($request->has('delete_image')) {
-                $information->image = null; // 画像を削除する場合は、nullを設定する
-            } elseif ($image) {
-                $information->image = $filename;
+            foreach ($images as $key => $value) {
+                if ($request->has("delete_{$key}")) {
+                    $information->{$key} = null; // 画像を削除する場合は、nullを設定する
+                } elseif ($value) {
+                    $information->{$key} = $value;
+                }
             }
+
             $information->save();
 
             DB::commit(); // すべての処理が正常に完了した場合はコミットする
