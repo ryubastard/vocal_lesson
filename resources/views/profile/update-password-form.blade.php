@@ -32,7 +32,7 @@
 
     <x-slot name="actions">
         <x-action-message class="mr-3" on="saved">
-            保存
+            パスワードを変更しました。
         </x-action-message>
 
         <x-button>

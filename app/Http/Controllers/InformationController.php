@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Information;
 use Illuminate\Support\Facades\DB;
@@ -80,7 +83,7 @@ class InformationController extends Controller
 
             session()->flash('status', '更新完了');
             return to_route('information.show'); //名前付きルート
-            
+
         } catch (Exception $e) {
             DB::rollback(); // エラーが発生した場合はロールバックする
             session()->flash('status', '更新に失敗しました。');

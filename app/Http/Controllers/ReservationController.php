@@ -65,7 +65,9 @@ class ReservationController extends Controller
      */
     public function reserve(Request $request)
     {
-        DB::transaction(function () use ($request) {
+        try {
+            DB::beginTransaction();
+
             $lesson = Lesson::findOrFail($request->id);
             $reservedPeople = DB::table('reservations')
                 ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
@@ -91,13 +93,19 @@ class ReservationController extends Controller
                 }
 
                 session()->flash('status', '予約しました。');
-                return to_route('dashboard');
+                DB::commit();
+                return redirect()->route('dashboard');
             } else {
                 session()->flash('status', 'この人数は予約できません。');
+                DB::rollBack();
                 return view('dashboard');
             }
-        });
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
+
 
     /**
      * Display the specified resource.

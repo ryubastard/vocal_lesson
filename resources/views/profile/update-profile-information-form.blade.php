@@ -97,7 +97,7 @@
 
     <x-slot name="actions">
         <x-action-message class="mr-3" on="saved">
-            保存
+            保存しました。
         </x-action-message>
 
         <x-button wire:loading.attr="disabled" wire:target="photo">
