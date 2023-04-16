@@ -11,6 +11,7 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Event;
 use App\Models\Lesson;
+use App\Notifications\PasswordReset;
 
 class User extends Authenticatable
 {
@@ -67,5 +68,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Lesson::class, 'reservations')
             ->withPivot('id', 'email');
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new PasswordReset($token));
     }
 }
