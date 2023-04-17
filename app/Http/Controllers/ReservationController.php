@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\NewUserAndLessonRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationMail;
 
 class ReservationController extends Controller
 {
@@ -91,6 +93,11 @@ class ReservationController extends Controller
                     $lesson->is_visible = 0;
                     $lesson->save();
                 }
+
+                $user = Auth::user()->name;
+
+                Mail::to(Auth::user()->email)
+                    ->send(new ReservationMail($user, $lesson));
 
                 session()->flash('status', '予約しました。');
                 DB::commit();

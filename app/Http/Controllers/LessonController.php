@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
 
-
 class LessonController extends Controller
 {
     /**
