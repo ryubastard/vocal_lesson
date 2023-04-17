@@ -4,14 +4,14 @@ import { Japanese } from "flatpickr/dist/l10n/ja.js"
 flatpickr("#lesson_date",
     {
         locale: Japanese, minDate: "today",
-        maxDate: new Date().fp_incr(30)
+        maxDate: new Date().fp_incr(360)
     });
 
 flatpickr("#calendar",
     {
         locale: Japanese, 
         minDate: "today",
-        maxDate: new Date().fp_incr(30)
+        maxDate: new Date().fp_incr(60)
     });
 
 // 時間表示、カレンダー非表示、24時間表記
