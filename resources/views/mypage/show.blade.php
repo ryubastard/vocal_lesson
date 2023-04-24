@@ -14,9 +14,9 @@
                     <x-validation-errors class="mb-4" />
 
                     @if (session('status'))
-                        <div class="mb-4 font-medium text-sm text-green-600">
-                            {{ session('status') }}
-                        </div>
+                    <div class="mb-4 font-medium text-sm text-green-600">
+                        {{ session('status') }}
+                    </div>
                     @endif
 
                     <div>
@@ -51,18 +51,19 @@
                         </div>
                     </div>
 
-                    <form id="cancel_{{ $lesson->id }}" method="POST"
-                        action="{{ route('mypage.cancel', ['id' => $lesson->id]) }}">
+                    <form id="cancel_{{ $lesson->id }}" method="POST" action="{{ route('mypage.cancel', ['id' => $lesson->id]) }}">
                         @csrf
                         <div class="md:flex justify-between items-end">
                             <div class="mt-4">
                                 <x-label for="max_people" value="予約数" />
                                 {{ $reservation->number_of_people }}
                             </div>
-                            @if ($lesson->lessonDate >= \Carbon\Carbon::today()->format('Y年m月d日'))
-                                <button onclick="return confirm('本当にキャンセルしてもよろしいですか？')"
-                                    class="bg-red-500 rounded-md text-white ml-4 py-1 px-2">キャンセル</button>
-                            @endif
+                            @if ($lesson->lessonDate == \Carbon\Carbon::today()->format('Y年m月d日'))
+                            <span class="text-red-500 text-xs">レッスン当日のためキャンセルできません。</span>
+                            @elseif ($lesson->lessonDate < \Carbon\Carbon::today()->format('Y年m月d日'))
+                                @else
+                                <button onclick="return confirm('本当にキャンセルしてもよろしいですか？')" class="bg-red-500 rounded-md text-white ml-4 py-1 px-2">キャンセル</button>
+                                @endif
                         </div>
                     </form>
                 </div>

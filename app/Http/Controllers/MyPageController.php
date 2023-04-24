@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\MyPageService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CancelMail;
 
 class MyPageController extends Controller
 {
@@ -70,9 +72,17 @@ class MyPageController extends Controller
                 $lesson->save();
             }
 
-            DB::commit();
+            $user = Auth::user()->name;
+            $lessonDate = $lesson->lessonDate;
+            $startTime = $lesson->startTime;
+            $endTime = $lesson->endTime;
+
+            Mail::to(Auth::user()->email)
+                ->queue(new CancelMail($user, $lesson, $lessonDate, $startTime, $endTime));
 
             session()->flash('status', 'キャンセルしました。');
+            DB::commit();
+
             return to_route('dashboard');
         } catch (\Exception $e) {
             DB::rollback();

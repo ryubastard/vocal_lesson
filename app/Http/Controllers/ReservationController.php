@@ -13,6 +13,7 @@ use App\Http\Requests\NewUserAndLessonRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationMail;
+use App\Mail\NewUserMail;
 
 class ReservationController extends Controller
 {
@@ -71,6 +72,8 @@ class ReservationController extends Controller
             DB::beginTransaction();
 
             $lesson = Lesson::findOrFail($request->id);
+            $reserved_people = $request->reserved_people;
+
             $reservedPeople = DB::table('reservations')
                 ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
                 ->groupBy('lesson_id')
@@ -85,7 +88,7 @@ class ReservationController extends Controller
                     'user_id' => Auth::id(),
                     'lesson_id' => $request->id,
                     'email' => Auth::user()->email,
-                    'number_of_people' => $request->reserved_people,
+                    'number_of_people' => $reserved_people,
                 ]);
 
                 // 予約が完了した後に、予約人数がレッスンの最大人数を上回っている場合は、lessonsテーブルのis_visibleカラムを0に変更する
@@ -94,13 +97,16 @@ class ReservationController extends Controller
                     $lesson->save();
                 }
 
-                $user = Auth::user()->name;
+                $lessonDate = $lesson->lessonDate;
+                $startTime = $lesson->startTime;
+                $endTime = $lesson->endTime;
 
                 Mail::to(Auth::user()->email)
-                    ->send(new ReservationMail($user, $lesson));
+                    ->queue(new ReservationMail(Auth::user()->name, $lesson, $reserved_people, $lessonDate, $startTime, $endTime));
 
                 session()->flash('status', '予約しました。');
                 DB::commit();
+
                 return redirect()->route('dashboard');
             } else {
                 session()->flash('status', 'この人数は予約できません。');
@@ -222,6 +228,15 @@ class ReservationController extends Controller
                 $lesson->is_visible = 0;
                 $lesson->save();
             }
+
+            $user = User::findOrFail($user_id);
+            $reserved_people = $request->session()->get('reserved_people');
+            $lessonDate = $lesson->lessonDate;
+            $startTime = $lesson->startTime;
+            $endTime = $lesson->endTime;
+
+            Mail::to($user->email)
+                ->queue(new NewUserMail($user, $reserved_people, $lesson, $lessonDate, $startTime, $endTime));
 
             session()->flush();
             DB::commit();

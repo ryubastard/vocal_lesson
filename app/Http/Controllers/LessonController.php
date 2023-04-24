@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lesson;
+use App\Models\User;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use App\Services\lessonService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OwnerCancelMail;
 
 class LessonController extends Controller
 {
@@ -368,6 +371,15 @@ class LessonController extends Controller
                 $lesson->save();
             }
         });
+
+        $lesson = Lesson::findOrFail($lesson);
+        $user = User::findOrFail($id);
+        $lessonDate = $lesson->lessonDate;
+        $startTime = $lesson->startTime;
+        $endTime = $lesson->endTime;
+
+        Mail::to($user->email)
+            ->queue(new OwnerCancelMail($user, $lesson, $lessonDate, $startTime, $endTime));
 
         session()->flash('status', 'キャンセルしました。');
         return back();

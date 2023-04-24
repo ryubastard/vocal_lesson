@@ -9,27 +9,26 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ReservationMail extends Mailable
+class OwnerCancelMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $user;
     public $lesson;
-    public $reserved_people;
     public $lessonDate;
     public $startTime;
     public $endTime;
+    public $message;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($user, $lesson, $reserved_people, $lessonDate, $startTime, $endTime)
+    public function __construct($user, $lesson, $lessonDate, $startTime, $endTime)
     {
         $this->user = $user;
         $this->lesson = $lesson;
-        $this->reserved_people = $reserved_people;
         $this->lessonDate = $lessonDate;
         $this->startTime = $startTime;
         $this->endTime = $endTime;
@@ -43,7 +42,7 @@ class ReservationMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'レッスン予約完了',
+            subject: 'レッスンのキャンセル',
         );
     }
 
@@ -55,7 +54,7 @@ class ReservationMail extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.reservation_completed',
+            view: 'emails.owner_canceled',
         );
     }
 
