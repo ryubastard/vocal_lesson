@@ -22,6 +22,8 @@ return new class extends Migration
             $table->datetime('start_date');
             $table->datetime('end_date');
             $table->boolean('is_visible');
+            $table->unsignedBigInteger('teacher_id')->nullable();
+            $table->foreign('teacher_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

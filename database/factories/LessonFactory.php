@@ -33,7 +33,8 @@ class LessonFactory extends Factory
             'max_people' => $this->faker->numberBetween(1, 20),
             'start_date' => $dummyDate->format('Y-m-d H:i:s'),
             'end_date' => $dummyDate->modify('+1hour')->format('Y-m-d H:i:s'),
-            'is_visible' => $this->faker->boolean
+            'is_visible' => $this->faker->boolean,
+            'teacher_id' => $this->faker->numberBetween(2, 4) // 2~4のランダムな値をセット
         ];
     }
 }

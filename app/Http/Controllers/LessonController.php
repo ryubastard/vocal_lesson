@@ -8,6 +8,7 @@ use App\Models\Reservation;
 use Carbon\Carbon;
 use App\Services\lessonService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
 use Illuminate\Support\Facades\Mail;
@@ -127,6 +128,7 @@ class LessonController extends Controller
             'end_date' => $endDate,
             'max_people' => $request['max_people'],
             'is_visible' => $request['is_visible'],
+            'teacher_id' => Auth::id(),
         ]);
 
         session()->flash('status', '登録完了');
@@ -245,6 +247,7 @@ class LessonController extends Controller
             $lesson->end_date = $endDate;
             $lesson->max_people = $request['max_people'];
             $lesson->is_visible = $request['is_visible'];
+            $lesson->teacher_id = Auth::id();
             $lesson->save();
 
             DB::commit();

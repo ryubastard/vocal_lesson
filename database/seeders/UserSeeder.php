@@ -33,6 +33,20 @@ class UserSeeder extends Seeder
                     'role' => 5,
                 ],
                 [
+                    'name' => 'manager',
+                    'kana' => 'マネージャー2',
+                    'email' => 'manager2@manager.com',
+                    'password' => Hash::make('password123'),
+                    'role' => 5,
+                ],
+                [
+                    'name' => 'manager',
+                    'kana' => 'マネージャー3',
+                    'email' => 'manager3@manager.com',
+                    'password' => Hash::make('password123'),
+                    'role' => 5,
+                ],
+                [
                     'name' => 'test',
                     'kana' => 'テスト',
                     'email' => 'test@test.com',

@@ -15,10 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call([
+            UserSeeder::class,
+        ]);
+        
         Lesson::factory(100)->create();
 
         $this->call([
-            UserSeeder::class,
             ReservationSeeder::class,
             InformationSeeder::class,
         ]);
