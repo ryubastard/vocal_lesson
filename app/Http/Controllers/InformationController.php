@@ -30,7 +30,7 @@ class InformationController extends Controller
      */
     public function show()
     {
-        $information = Information::first();
+        $information = Information::where('user_id', Auth::id())->get()[0];
         return view('manager.information.show', compact('information'));
     }
 
@@ -42,7 +42,7 @@ class InformationController extends Controller
      */
     public function edit()
     {
-        $information = Information::first();
+        $information = Information::where('user_id', Auth::id())->get()[0];
         return view('manager.information.edit', compact('information'));
     }
 
@@ -75,7 +75,8 @@ class InformationController extends Controller
             }
 
             // 保存処理
-            $information = Information::first();
+            $information = Information::where('user_id', Auth::id())->get()[0];
+            $information->user_id = Auth::id();
             $information->information = $request->input('information');
 
             foreach ($images as $key => $value) {
