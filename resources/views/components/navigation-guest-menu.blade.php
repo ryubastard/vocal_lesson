@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="w-20 shrink-0 flex items-center">
-                    <a href="/calendar">
+                    <a href="/">
                         <img src="{{ asset('images/logo.png') }}">
                     </a>
                 </div>
@@ -13,9 +13,10 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
 
-                    <x-nav-link href="/calendar">
-                        レッスンカレンダー
+                    <x-nav-link href="/">
+                        講師一覧
                     </x-nav-link>
+                
                 </div>
             </div>
 

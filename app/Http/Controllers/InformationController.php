@@ -16,9 +16,12 @@ class InformationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
-        $information = Information::first();
+        $information =  DB::table('information')
+            ->where('user_id', $id)
+            ->get()[0];
+            
         return view('information', compact('information'));
     }
 

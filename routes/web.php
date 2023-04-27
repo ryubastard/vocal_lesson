@@ -5,6 +5,8 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\InformationController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Livewire\Calendar;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +23,11 @@ Route::get('/register', function () {
     abort(404);
 });
 
-Route::get('/', [InformationController::class, 'index'])
-    ->name('information')
-    ->middleware('guest');
+Route::get('/', [TeacherController::class, 'index'])
+    ->name('teacher');
+
+Route::get('/information/{id}', [InformationController::class, 'index'])
+    ->name('information');
 
 Route::get('/calendar', function () {
     return view('calendar');
