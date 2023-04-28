@@ -36,6 +36,7 @@ class LessonController extends Controller
                 $join->on('lessons.id', '=', 'rp.lesson_id');
             })
             ->whereDate('lessons.start_date', '>=', $today) // 最新の情報のみ取得
+            ->where('teacher_id', Auth::id())
             ->groupBy('date', 'name', 'location')
             ->orderBy('start_date', 'desc')
             ->paginate(10);
@@ -282,6 +283,7 @@ class LessonController extends Controller
                 $join->on('lessons.id', '=', 'rp.lesson_id');
             })
             ->whereDate('lessons.start_date', '<', $today)
+            ->where('teacher_id', Auth::id())
             ->groupBy('date', 'name', 'location')
             ->orderBy('start_date', 'desc')
             ->paginate(10);

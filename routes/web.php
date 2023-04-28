@@ -23,15 +23,16 @@ Route::get('/register', function () {
     abort(404);
 });
 
-Route::get('/', [TeacherController::class, 'index'])
-    ->name('teacher');
+Route::get('/', function () {
+    return view('teacher');
+})->name('teacher');;
 
 Route::get('/information/{id}', [InformationController::class, 'index'])
     ->name('information');
 
-Route::get('/calendar', function () {
+Route::get('/calendar/{id}', function () {
     return view('calendar');
-});
+})->name('calendar');;
 
 Route::prefix('manager')
     ->middleware('can:manager-higher')->group(function () {

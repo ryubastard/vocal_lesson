@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Carbon\Carbon;
 
 class LessonService
@@ -46,6 +47,7 @@ class LessonService
     // 一週間分の情報を取得するメソッド
     public static function getWeekLessons($startDate, $endDate)
     {
+        $id = Request::route()->parameter('id');
         $reservedPeople = DB::table('reservations')
             ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))
             ->groupBy('lesson_id');
@@ -55,7 +57,8 @@ class LessonService
                 $join->on('lessons.id', '=', 'reservedPeople.lesson_id');
             })
             ->whereBetween('start_date', [$startDate, $endDate])
-            ->where('is_visible', 1) 
+            ->where('is_visible', 1)
+            ->where('teacher_id', $id)
             ->orderBy('start_date', 'asc')
             ->get();
     }

@@ -27,7 +27,7 @@
                     <b class="sm:text-2xl text-3xl mb-4 font-medium text-gray-900">サービス説明</b>
                     <p class="mb-8 leading-relaxed text-lg">{!! nl2br(e($information->information)) !!}</p>
                     <div class="flex w-full justify-center items-end">
-                        <a href="/calendar" class="bg-cyan-200 text-white py-2 px-6 rounded-full hover:bg-cyan-300">予約できる日を探す</a>
+                        <a href="{{ route('calendar', ['id' => $information->user_id]) }}" class="bg-cyan-200 text-white py-2 px-6 rounded-full hover:bg-cyan-300">予約できる日を探す</a>
                     </div>
                 </div>
             </div>
