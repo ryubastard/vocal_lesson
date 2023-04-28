@@ -25,6 +25,7 @@ class Lesson extends Model
         'start_date',
         'end_date',
         'is_visible',
+        'teacher_id',
     ];
 
     protected function lessonDate(): Attribute //データを加工して取得する（アクセサ）
