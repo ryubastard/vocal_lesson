@@ -6,6 +6,7 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\AdminController;
 use App\Http\Livewire\Calendar;
 
 /*
@@ -33,6 +34,11 @@ Route::get('/information/{id}', [InformationController::class, 'index'])
 Route::get('/calendar/{id}', function () {
     return view('calendar');
 })->name('calendar');;
+
+Route::prefix('admin')
+    ->middleware('can:admin')->group(function () {
+        Route::get('admin', [AdminController::class, 'index'])->name('admin.index');
+    });
 
 Route::prefix('manager')
     ->middleware('can:manager-higher')->group(function () {

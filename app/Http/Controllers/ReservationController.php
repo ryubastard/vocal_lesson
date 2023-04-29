@@ -35,7 +35,9 @@ class ReservationController extends Controller
      */
     public function detail($id)
     {
-        $lesson = Lesson::findOrFail($id);
+        $lesson = Lesson::leftJoin('users', 'lessons.teacher_id', '=', 'users.id')
+            ->select('lessons.*', 'users.name AS teacher_name')
+            ->findOrFail($id);
 
         $reservedPeople = DB::table('reservations')
             ->select('lesson_id', DB::raw('sum(number_of_people) as number_of_people'))

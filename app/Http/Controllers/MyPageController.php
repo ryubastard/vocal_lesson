@@ -37,7 +37,9 @@ class MyPageController extends Controller
      */
     public function show($id)
     {
-        $lesson = Lesson::findOrFail($id);
+        $lesson = Lesson::leftJoin('users', 'lessons.teacher_id', '=', 'users.id')
+            ->select('lessons.*', 'users.name AS teacher_name')
+            ->findOrFail($id);
         $reservation = Reservation::where('user_id', '=', Auth::id())
             ->where('lesson_id', '=', $id)
             ->latest() // 最新の情報

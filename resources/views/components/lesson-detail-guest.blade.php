@@ -21,9 +21,17 @@
 
                     <form method="POST" action="{{ route('lessons.confirmation', ['id' => $lesson->id]) }}">
                         @csrf
-                        <div>
-                            <x-label for="lesson_name" value="レッスン名" />
-                            {{ $lesson->name }}
+                        
+                        <div class="md:flex justify-between">
+                            <div class="mt-4">
+                                <x-label for="lesson_name" value="レッスン名" />
+                                {{ $lesson->name }}
+                            </div>
+
+                            <div class="mt-4">
+                                <x-label for="teacher_name" value="講師名" />
+                                {{ $lesson->teacher_name }}
+                            </div>
                         </div>
 
                         <div class="mt-4">

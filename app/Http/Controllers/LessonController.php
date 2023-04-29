@@ -148,7 +148,9 @@ class LessonController extends Controller
      */
     public function show(lesson $lesson)
     {
-        $lesson = lesson::findOrFail($lesson->id);
+        $lesson = Lesson::leftJoin('users', 'lessons.teacher_id', '=', 'users.id')
+            ->select('lessons.*', 'users.name AS teacher_name')
+            ->findOrFail($lesson->id);
         $users = $lesson->users;
 
         $reservations = []; // 連想配列を作成 
