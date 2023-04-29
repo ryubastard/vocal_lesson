@@ -221,6 +221,7 @@ class LessonController extends Controller
 
             //重複チェック
             $check = lessonService::countlessonDuplication(
+                Auth::id(),
                 $request['lesson_date'],
                 $request['start_time'],
                 $request['end_time']

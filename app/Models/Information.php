@@ -12,6 +12,7 @@ class Information extends Model
     protected $fillable = [
         'user_id',
         'information',
-        'image'
+        'image',
+        'is_visible',
     ];
 }

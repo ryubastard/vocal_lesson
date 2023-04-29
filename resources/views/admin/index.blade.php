@@ -11,39 +11,35 @@
                 <h2 class="text-center py-2">講師一覧</h2>
                 <section class="text-gray-600 body-font">
                     <div class="container px-5 py-4 mx-auto">
+                        
                         @if (session('status'))
-                            <div class="mb-4 font-medium text-sm text-green-600">
-                                {{ session('status') }}
-                            </div>
+                        <div class="mb-4 font-medium text-sm text-green-600">
+                            {{ session('status') }}
+                        </div>
                         @endif
+
+                        <button onclick="location.href='{{ route('admin.create') }}'" class="flex mb-4 ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">新規登録</button>
+                        
                         <div class="lg:w-2/3 w-full mx-auto overflow-auto">
                             <table class="table-auto w-full text-left whitespace-no-wrap">
                                 <thead>
                                     <tr>
-                                        <th
-                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                        <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
                                             講師名</th>
-                                        <th
-                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                                            レッスン管理</th>
-                                        <th
-                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                                            予約管理</th>
-                                        <th
-                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
-                                            削除</th>
+                                        <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            パスワード変更</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($teachers as $teacher)
-                                        <tr>
-                                            <td class="text-blue-500 px-4 py-3">{{ $teacher->name }}</td>
-                                            <td class="px-4 py-3">
-                                            </td>
-                                            <td class="px-4 py-3">
-                                            </td>
-                                            <td class="px-4 py-3"></td>
-                                        </tr>
+                                    <tr>
+                                        <td class="text-blue-500 px-4 py-3">{{ $teacher->name }}</td>
+                                        <td class="px-4 py-3">
+                                            <a href="#" class="bg-cyan-200 text-white py-2 px-6 rounded-full hover:bg-cyan-300">
+                                                開く
+                                            </a>
+                                        </td>
+                                    </tr>
                                     @endforeach
                                 </tbody>
                             </table>

@@ -23,9 +23,10 @@ class LessonService
 
     // 重複チェック
     // 重複しているのが1件なら問題なく、1件より多ければエラー
-    public static function countLessonDuplication($lessonDate, $startTime, $endTime)
+    public static function countLessonDuplication($teacher_id, $lessonDate, $startTime, $endTime)
     {
         return DB::table('lessons')
+            ->where('teacher_id', '<>', $teacher_id) // 重複をチェックするために追加した条件
             ->whereDate('start_date', $lessonDate)
             ->whereTime('end_date', '>', $startTime)
             ->whereTime('start_date', '<', $endTime)

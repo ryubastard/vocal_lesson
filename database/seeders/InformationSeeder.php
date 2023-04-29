@@ -23,6 +23,7 @@ class InformationSeeder extends Seeder
                     'image1' => null,
                     'image2' => null,
                     'image3' => null,
+                    'is_visible' => 1,
                 ],
                 [
                     'user_id' => 3,
@@ -30,6 +31,7 @@ class InformationSeeder extends Seeder
                     'image1' => null,
                     'image2' => null,
                     'image3' => null,
+                    'is_visible' => 1,
                 ],
                 [
                     'user_id' => 4,
@@ -37,6 +39,7 @@ class InformationSeeder extends Seeder
                     'image1' => null,
                     'image2' => null,
                     'image3' => null,
+                    'is_visible' => 1,
                 ],
             ],
         );

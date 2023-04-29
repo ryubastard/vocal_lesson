@@ -21,9 +21,7 @@
                     <div class="w-full md:w-2/3 flex flex-col mb-4 items-start">
                         <b class="sm:text-2xl text-3xl mb-4 font-medium text-gray-900">information画像</b>
 
-                        @for($i = 1; $i <= 3; $i++) 
-                        画像{{$i}}
-                        <div class="flex items-center">
+                        @for($i = 1; $i <= 3; $i++) 画像{{$i}} <div class="flex items-center">
                             @if ($information["image{$i}"])
                             <img class="lg:w-2/6 md:w-3/6 w-5/6 mb-6 object-cover object-center rounded" src="{{ asset('storage/images/' . $information["image{$i}"]) }}" alt="image{{$i}}">
                             @else
@@ -48,11 +46,17 @@
                     @endfor
                 </div>
 
+                <div class="flex space-x-4 justify-around">
+                    <input type="radio" name="is_visible" value="1" @if ($information->is_visible === 1) { checked } @endif />表示
+                    <input type="radio" name="is_visible" value="0" @if ($information->is_visible === 0) { checked } @endif />非表示
+                </div>
+
                 <div class="w-full md:w-2/3 flex flex-col mb-16 items-start">
                     <b class="sm:text-2xl text-3xl mb-4 font-medium text-gray-900">サービス説明</b>
                     <x-textarea rows="6" id="information" name="information" class="block mt-1 w-full" style="width: 92%;">
                         {{ $information->information }}
                     </x-textarea>
+
                     <div class="flex w-full justify-center items-end">
                         <x-button class="ml-4 my-3">
                             確定する

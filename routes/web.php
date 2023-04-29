@@ -5,7 +5,6 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\InformationController;
-use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\AdminController;
 use App\Http\Livewire\Calendar;
 
@@ -37,7 +36,9 @@ Route::get('/calendar/{id}', function () {
 
 Route::prefix('admin')
     ->middleware('can:admin')->group(function () {
-        Route::get('admin', [AdminController::class, 'index'])->name('admin.index');
+        Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+        Route::get('/create',[AdminController::class, 'create'])->name('admin.create');
+        Route::post('/store',[AdminController::class, 'store'])->name('admin.store');
     });
 
 Route::prefix('manager')

@@ -81,7 +81,8 @@ class InformationController extends Controller
             $information = Information::where('user_id', Auth::id())->get()[0];
             $information->user_id = Auth::id();
             $information->information = $request->input('information');
-
+            $information->is_visible = $request->input('is_visible');
+            
             foreach ($images as $key => $value) {
                 if ($request->has("delete_{$key}")) {
                     $information->{$key} = null; // 画像を削除する場合は、nullを設定する

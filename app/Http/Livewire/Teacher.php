@@ -14,6 +14,7 @@ class Teacher extends Component
         $informations = DB::table('information')
             ->leftJoin('users', 'information.user_id', '=', 'users.id')
             ->select('information.*', 'users.name')
+            ->where('is_visible', 1)
             ->get();
 
         foreach ($informations as $information) {
