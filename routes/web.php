@@ -39,6 +39,9 @@ Route::prefix('admin')
         Route::get('/', [AdminController::class, 'index'])->name('admin.index');
         Route::get('/create',[AdminController::class, 'create'])->name('admin.create');
         Route::post('/store',[AdminController::class, 'store'])->name('admin.store');
+        Route::post('/grant/{id}',[AdminController::class, 'grant'])->name('admin.grant');
+        Route::get('/password/{id}',[AdminController::class, 'password'])->name('admin.password');
+        Route::post('/password/{id}',[AdminController::class, 'change_password'])->name('admin.change_password');
     });
 
 Route::prefix('manager')

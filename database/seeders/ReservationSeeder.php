@@ -17,8 +17,8 @@ class ReservationSeeder extends Seeder
     {
         DB::table('reservations')->insert([
             [
-                'user_id' => 1,
-                'lesson_id' => 1,
+                'user_id' => 2,
+                'lesson_id' => 3,
                 'email' => 'admin@admin.com',
                 'number_of_people' => 5,
             ], [
@@ -27,13 +27,13 @@ class ReservationSeeder extends Seeder
                 'email' => 'manager@manager.com',
                 'number_of_people' => 3,
             ], [
-                'user_id' => 1,
-                'lesson_id' => 2,
+                'user_id' => 5,
+                'lesson_id' => 4,
                 'email' => 'admin@admin.com',
                 'number_of_people' => 2,
             ], [
-                'user_id' => 2,
-                'lesson_id' => 2,
+                'user_id' => 3,
+                'lesson_id' => 5,
                 'email' => 'manager@manager.com',
                 'number_of_people' => 2,
             ]

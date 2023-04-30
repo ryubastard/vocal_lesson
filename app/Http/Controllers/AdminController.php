@@ -4,17 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Information;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use App\Http\Requests\NewUserAndLessonRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 
 class AdminController extends Controller
 {
     public function index()
     {
         $teachers = User::where('role', '=', 5)->get();
-        return view('admin.index', compact('teachers'));
+        $users = User::where('role', '=', 9)->get();
+        return view('admin.index', compact('teachers', 'users'));
     }
 
     public function create()
@@ -22,7 +24,7 @@ class AdminController extends Controller
         return view('admin.create');
     }
 
-    public function store(Request $request)
+    public function store(NewUserAndLessonRequest  $request)
     {
         try {
             DB::beginTransaction();
@@ -41,31 +43,58 @@ class AdminController extends Controller
             Information::create([
                 'id' => Information::latest('id')->value('id') + 1,
                 'user_id' => $user_id,
-                'information' => null,
-                'image1' => null,
-                'image2' => null,
-                'image3' => null,
                 'is_visible' => 0,
             ]);
 
-            session()->flash('status', '登録しました。');
-
-            if ($request->input('registration') === "1") {
-                return back()->withInput();
-            }
-
-            session()->flush();
-
             DB::commit();
-            return to_route('admin.index');
-        } catch (ModelNotFoundException $e) {
-            DB::rollBack();
-            dd('a');
-            abort(404);
+
+            session()->flash('status', '登録しました。');
+            return redirect()->route('admin.index');
         } catch (\Exception $e) {
             session()->flash('status', '問題が発生しました。');
             DB::rollBack();
             return back()->withInput();
         }
+    }
+
+    public function grant($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $user = User::findOrFail($id);
+            $user->role = 5;
+            $user->save();
+
+            Information::create([
+                'id' => Information::latest('id')->value('id') + 1,
+                'user_id' => $user->id,
+                'is_visible' => 0,
+            ]);
+            DB::commit();
+        } catch (Exception $e) {
+            session()->flash('error', 'エラーが発生しました。');
+            DB::rollBack();
+            return redirect()->route('admin.index');
+        }
+
+        session()->flash('status', '更新完了');
+        return redirect()->route('admin.index');
+    }
+
+    public function password($id)
+    {
+        $user = User::findOrFail($id);
+        return view('admin.password', compact('user'));
+    }
+
+    public function change_password(UpdatePasswordRequest $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $user->password = Hash::make($request['password']);
+        $user->save();
+
+        session()->flash('status', '変更しました。');
+        return redirect()->route('admin.index');
     }
 }

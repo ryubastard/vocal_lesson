@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            講師新規登録
+            パスワード変更
         </h2>
     </x-slot>
 
@@ -19,22 +19,11 @@
                     </div>
                     @endif
 
-                    <form method="POST" action="{{ route('admin.store') }}">
+                    <form method="POST" action="{{ route('admin.change_password', ['id' => $user->id]) }}">
                         @csrf
 
                         <div>
-                            <x-label for="name" value="講師名" />
-                            <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-label for="kana" value="フリガナ" />
-                            <x-input id="kana" class="block mt-1 w-full" type="text" name="kana" :value="old('kana')" required />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-label for="email" value="メールアドレス" />
-                            <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="email" />
+                            <p>変更する人名：{{ $user->name }}さん</p>
                         </div>
 
                         <div class="mt-4">
@@ -42,9 +31,14 @@
                             <x-input id="password" class="block mt-1 w-full" type="password" name="password" required />
                         </div>
 
+                        <div class="mt-4">
+                            <x-label for="password_confirmation" value="パスワード確認用" />
+                            <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
+                        </div>
+
                         <div class="mt-4 flex justify-end">
                             <x-button class="ml-4">
-                                新規登録
+                                更新
                             </x-button>
                         </div>
                     </form>
