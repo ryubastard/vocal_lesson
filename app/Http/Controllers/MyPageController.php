@@ -74,13 +74,14 @@ class MyPageController extends Controller
                 $lesson->save();
             }
 
-            $user = Auth::user()->name;
-            $lessonDate = $lesson->lessonDate;
-            $startTime = $lesson->startTime;
-            $endTime = $lesson->endTime;
+            // メール送信するときは、以下のコメントアウトを解除する
+            // $user = Auth::user()->name;
+            // $lessonDate = $lesson->lessonDate;
+            // $startTime = $lesson->startTime;
+            // $endTime = $lesson->endTime;
 
-            Mail::to(Auth::user()->email)
-                ->queue(new CancelMail($user, $lesson, $lessonDate, $startTime, $endTime));
+            // Mail::to(Auth::user()->email)
+            //     ->queue(new CancelMail($user, $lesson, $lessonDate, $startTime, $endTime));
 
             session()->flash('status', 'キャンセルしました。');
             DB::commit();

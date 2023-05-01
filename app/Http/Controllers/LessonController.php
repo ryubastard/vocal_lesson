@@ -380,14 +380,15 @@ class LessonController extends Controller
             }
         });
 
-        $lesson = Lesson::findOrFail($lesson);
-        $user = User::findOrFail($id);
-        $lessonDate = $lesson->lessonDate;
-        $startTime = $lesson->startTime;
-        $endTime = $lesson->endTime;
+        // メール送信するときは、以下のコメントアウトを解除する
+        // $lesson = Lesson::findOrFail($lesson);
+        // $user = User::findOrFail($id);
+        // $lessonDate = $lesson->lessonDate;
+        // $startTime = $lesson->startTime;
+        // $endTime = $lesson->endTime;
 
-        Mail::to($user->email)
-            ->queue(new OwnerCancelMail($user, $lesson, $lessonDate, $startTime, $endTime));
+        // Mail::to($user->email)
+        //     ->queue(new OwnerCancelMail($user, $lesson, $lessonDate, $startTime, $endTime));
 
         session()->flash('status', 'キャンセルしました。');
         return back();

@@ -99,12 +99,13 @@ class ReservationController extends Controller
                     $lesson->save();
                 }
 
-                $lessonDate = $lesson->lessonDate;
-                $startTime = $lesson->startTime;
-                $endTime = $lesson->endTime;
+                // メール送信するときは、以下のコメントアウトを解除する
+                // $lessonDate = $lesson->lessonDate;
+                // $startTime = $lesson->startTime;
+                // $endTime = $lesson->endTime;
 
-                Mail::to(Auth::user()->email)
-                    ->queue(new ReservationMail(Auth::user()->name, $lesson, $reserved_people, $lessonDate, $startTime, $endTime));
+                // Mail::to(Auth::user()->email)
+                //     ->queue(new ReservationMail(Auth::user()->name, $lesson, $reserved_people, $lessonDate, $startTime, $endTime));
 
                 session()->flash('status', '予約しました。');
                 DB::commit();
@@ -231,14 +232,15 @@ class ReservationController extends Controller
                 $lesson->save();
             }
 
-            $user = User::findOrFail($user_id);
-            $reserved_people = $request->session()->get('reserved_people');
-            $lessonDate = $lesson->lessonDate;
-            $startTime = $lesson->startTime;
-            $endTime = $lesson->endTime;
+            // メール送信するときは、以下のコメントアウトを解除する
+            // $user = User::findOrFail($user_id);
+            // $reserved_people = $request->session()->get('reserved_people');
+            // $lessonDate = $lesson->lessonDate;
+            // $startTime = $lesson->startTime;
+            // $endTime = $lesson->endTime;
 
-            Mail::to($user->email)
-                ->queue(new NewUserMail($user, $reserved_people, $lesson, $lessonDate, $startTime, $endTime));
+            // Mail::to($user->email)
+            //     ->queue(new NewUserMail($user, $reserved_people, $lesson, $lessonDate, $startTime, $endTime));
 
             session()->flush();
             DB::commit();
